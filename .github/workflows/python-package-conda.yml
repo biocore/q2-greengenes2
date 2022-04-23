@@ -1,0 +1,57 @@
+# configuration derived from q2-katharoseq
+name: Python Package using Conda
+
+on: [push]
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 5
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+    - uses: conda-incubator/setup-miniconda@v2
+      with:
+        auto-update-conda: true
+        python-version: ${{ matrix.python-version }}
+    - name: Add conda to system path
+      run: |
+        # $CONDA is an environment variable pointing to the root of the miniconda directory
+        echo $CONDA/bin >> $GITHUB_PATH
+    - name: Install dependencies
+      run: |
+        wget -q https://raw.githubusercontent.com/qiime2/environment-files/master/latest/staging/qiime2-latest-py38-linux-conda.yml
+        conda env create -q -n test-env --file qiime2-latest-py38-linux-conda.yml
+        source activate test-env
+        conda install flake8 pytest
+        pip install -e . --no-deps
+    - name: Lint with flake8
+      run: |
+        source activate test-env
+        flake8 q2_gg2
+    - name: Test with pytest
+      run: |
+        source activate test-env
+        pytest
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+    - name: flake8
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+    - name: install dependencies
+      run: |
+        python -m pip install --upgrade pip
+    - name: Check out repository code
+      uses: actions/checkout@v2
+    - name: lint
+      run: |
+        pip install -q flake8
+        flake8 q2_gg2
