@@ -1,8 +1,8 @@
 # Background
 
-The Greengenes2 phylogeny is based on whole genome information from the Web of Life, and revised with high quality full length 16S from the Living Tree Project and full length 16S extracted from bacterial operons using uDance. A seed taxonomy is derived using the mappings from the Web of Life to GTDB. This taxonomy is then augmented using information from the Living Tree Project when possible. The augmented taxonomy is decorated onto the backbone using tax2tree.
+The Greengenes2 phylogeny is based on whole genome information from the [Web of Life](https://biocore.github.io/wol/), and revised with high quality full length 16S from the [Living Tree Project](https://imedea.uib-csic.es/mmg/ltp/) and full length 16S extracted from [bacterial operons](https://www.nature.com/articles/s41592-020-01041-y) using [uDance](https://github.com/balabanmetin/uDance). A seed taxonomy is derived using the mappings from the Web of Life to [GTDB](https://gtdb.ecogenomic.org/). This taxonomy is then augmented using information from the Living Tree Project when possible. The augmented taxonomy is decorated onto the backbone using [tax2tree](https://github.com/biocore/tax2tree).
 
-Using this decorated backbone, all public and private 16S V4 ASVs from Qiita representing hundreds of thousands of samples, as well as full length mitochondrial and chloroplast 16S (sourced from SILVA), are then placed using DEPP. Fragments are resolved. The resulting tree contains > 15,000,000 tips. 
+Using this decorated backbone, all public and private 16S V4 ASVs from [Qiita](https://qiita.ucsd.edu/) pulled from [redbiom](https://github.com/biocore/redbiom/) representing hundreds of thousands of samples, as well as full length mitochondrial and chloroplast 16S (sourced from [SILVA](https://www.arb-silva.de/), are then placed using [DEPP](https://github.com/yueyujiang/DEPP). Fragments are resolved. The resulting tree contains > 15,000,000 tips. 
 
 Fragment resolution can result in fragments being placed on the parent edge of a named node. This can occur if the node representing a clade, such as d__Archaea, does not represent sufficient diversity for the input fragments to place. As a result, prior to reading taxonomy off of the tree, each name from the backbone is evaluated for whether its edge to parent has a single or multifurcation of placements. If this occurs, the name is “promoted”. The idea being that fragments off a named edge to its parent are more like the named node than a sibling.
 
@@ -11,9 +11,9 @@ Following this name promotion, the full taxonomy is then read off the tree provi
 # Install
 
 ```
-$ git clone XXX
+$ git clone https://github.com/wasade/q2-greengenes2.git
 $ source activate qiime2.2022.2
-$ cd XXX
+$ cd q2-greengenes2
 $ pip install -e .
 ```
 
@@ -45,7 +45,7 @@ $ qiime greengenes2 taxonomy-from-table \
     --o-classification <the_resulting_classifications>
 ```
 
-The QIIME 2 Greengenes2 plugin also supports the classic method of classification through FeatureData[Sequence] artifacts:
+The QIIME 2 Greengenes2 plugin also supports the classic method of classification through `FeatureData[Sequence]` artifacts:
 
 ```
 $ qiime greengenes2 taxonomy-from-features \
@@ -58,7 +58,7 @@ $ qiime greengenes2 taxonomy-from-features \
 
 The Greengenes2 reference tree can be readily used for feature tables based on WoL-assessed short read data, 16S V4 ASVs, or the combination of those data types. The only essential requirement is that the features represented by the table are also present in the tree.
 
-The Greengenes2 plugin implements a rapid method for performing this filtering. The same filtering is also possible using the q2-fragment-insertion plugin, however that plugin does not presently use faster phylogeny parsing logic. For filtering, either the phylogeny or taxonomy tree can be used:
+The Greengenes2 plugin implements a rapid method for performing this filtering. The same filtering is also possible using the `q2-fragment-insertion` plugin, however that plugin does not presently use faster phylogeny parsing logic. For filtering, either the phylogeny or taxonomy tree can be used:
 
 ```
 $ qiime greengenes2 filter-features \
