@@ -1,0 +1,2 @@
+include versioneer.py
+include q2_gg2/_version.py

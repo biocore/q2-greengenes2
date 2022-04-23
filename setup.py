@@ -1,0 +1,22 @@
+from setuptools import setup, find_packages
+
+import versioneer
+
+setup(
+    name="q2-gg2",
+    version=versioneer.get_version(),
+    cmdclass=versioneer.get_cmdclass(),
+    packages=find_packages(),
+    url="",
+    license="BSD-3-Clause",
+    description="Support methods for interaction with Greengenes2",
+    entry_points={
+        "qiime2.plugins":
+        ["q2-gg2=q2_gg2.plugin_setup:plugin"]
+    },
+    package_data={
+        'q2_gg2.tests': [],
+        'q2_gg2': []
+    },
+    zip_safe=False,
+)
