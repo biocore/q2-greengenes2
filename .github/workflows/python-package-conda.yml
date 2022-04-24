@@ -29,6 +29,7 @@ jobs:
         conda env create -q -n test-env --file qiime2-latest-py38-linux-conda.yml
         source activate test-env
         conda install flake8 pytest
+        conda install -c bioconda iow
         pip install -e . --no-deps
     - name: Lint with flake8
       run: |
