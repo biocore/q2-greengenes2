@@ -87,5 +87,5 @@ $ qiime greengenes2 relabel \
     --i-feature-table <your_feature_table> \
     --i-reference-label-map gg2-<version>-label_map.qza \
     --p-as-md5 \
-    --o-relabeled-table <the_relabeled_table
+    --o-relabeled-table <the_relabeled_table>
 ```
