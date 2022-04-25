@@ -5,7 +5,9 @@
 #
 # The full license is in the file LICENSE, distributed with this software.
 # ----------------------------------------------------------------------------
-from ._methods import taxonomy_from_table, taxonomy_from_features
+from ._methods import (taxonomy_from_table, taxonomy_from_features,
+                       filter_features, relabel)
 from . import _version
 __version__ = _version.get_versions()['version']
-__all__ = ['taxonomy_from_table', 'taxonomy_from_features']
+__all__ = ['taxonomy_from_table', 'taxonomy_from_features',
+           'filter_features', 'relabel']
