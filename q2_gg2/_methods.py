@@ -76,15 +76,16 @@ def taxonomy_from_table(reference_taxonomy: NewickFormat,
     return _classify(tree, features)
 
 
-def filter_features(table: biom.Table, reference: NewickFormat) -> biom.Table:
+def filter_features(feature_table: biom.Table,
+                    reference: NewickFormat) -> biom.Table:
     treedata = reference.read()
     tree = bp.parse_newick(treedata)
 
     names = {tree.name(i) for i, v in enumerate(tree.B) if v}
-
-    return table.filter(set(table.ids(axis='observation')) & names,
-                        axis='observation',
-                        inplace=False).remove_empty()
+    overlap = set(feature_table.ids(axis='observation')) & names
+    return feature_table.filter(overlap,
+                                axis='observation',
+                                inplace=False).remove_empty()
 
 
 def relabel(feature_table: biom.Table,
