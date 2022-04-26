@@ -6,16 +6,14 @@ Using this decorated backbone, all public and private 16S V4 ASVs from [Qiita](h
 
 Fragment resolution can result in fragments being placed on the parent edge of a named node. This can occur if the node representing a clade, such as d__Archaea, does not represent sufficient diversity for the input fragments to place. As a result, prior to reading taxonomy off of the tree, each name from the backbone is evaluated for whether its edge to parent has a single or multifurcation of placements. If this occurs, the name is “promoted”. The idea being that fragments off a named edge to its parent are more like the named node than a sibling.
 
-Following this name promotion, the full taxonomy is then read off the tree providing lineage information for each fragment and sequence represented in the tree. This taxonomy information can be utilized within QIIME 2 by cross referencing your input feature set against what’s present in the tree. By doing so, we can obtain taxonomy for both WGS data (if processed by Woltka) and 16S V4 ASVs. There is an important caveat though: right now, we can only classify based sequences already represented by the tree, so unrepresented V4 ASVs will be unassigned.  
+Following this name promotion, the full taxonomy is then read off the tree providing lineage information for each fragment and sequence represented in the tree. This taxonomy information can be utilized within QIIME 2 by cross referencing your input feature set against what’s present in the tree. By doing so, we can obtain taxonomy for both WGS data (if processed by [Woltka](https://github.com/qiyunzhu/woltka) and 16S V4 ASVs. There is an important caveat though: right now, we can only classify based sequences already represented by the tree, so unrepresented V4 ASVs will be unassigned.  
 
 # Install
 
 ```
-$ git clone https://github.com/wasade/q2-greengenes2.git
 $ source activate qiime2.2022.2
-$ cd q2-greengenes2
 $ conda install -c bioconda iow
-$ pip install -e .
+$ pip install git+https://github.com/wasade/q2-greengenes2.git
 ```
 
 # Reference database artifacts
@@ -51,7 +49,7 @@ The QIIME 2 Greengenes2 plugin also supports the classic method of classificatio
 ```
 $ qiime greengenes2 taxonomy-from-features \
     --i-reference-taxonomy <the_greengenes_reference> \
-    --i-reads <your_ASVs> \ 
+    --i-reads <your_FeatureData[Sequence]> \ 
     --o-classification <the_resulting_classifications>
 ```
 
