@@ -106,7 +106,7 @@ plugin.methods.register_function(
     inputs={'feature_table': FeatureTable[Frequency],
             'reference_label_map': ReferenceMap},
     parameters={'as_md5': Bool,
-                'as_sequence': Bool,
+                'as_asv': Bool,
                 'as_id': Bool},
     outputs=[('relabeled_table', FeatureTable[Frequency])],
     input_descriptions={
@@ -114,7 +114,8 @@ plugin.methods.register_function(
         'reference_label_map': "The reference label mapping"},
     parameter_descriptions={
         'as_md5': 'Convert to md5 labels',
-        'as_sequence': 'Convert to sequence labels',
+        'as_asv': ('Convert to ASV labels, assumes ASVs are < 500nt, will '
+                   'use sequence IDs as for non ASVs'),
         'as_id': 'Convert to identifiers'
     },
     output_descriptions={

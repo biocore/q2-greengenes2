@@ -91,14 +91,14 @@ def filter_features(feature_table: biom.Table,
 def relabel(feature_table: biom.Table,
             reference_label_map: pd.DataFrame,
             as_md5: bool = False,
-            as_sequence: bool = False,
+            as_asv: bool = False,
             as_id: bool = False) -> biom.Table:
-    if int(as_md5) + int(as_sequence) + int(as_id) > 1:
+    if int(as_md5) + int(as_asv) + int(as_id) > 1:
         raise ValueError("Only a single conversion type can be specified")
 
     if as_md5:
         key = 'md5'
-    elif as_sequence:
+    elif as_asv:
         key = 'sequence'
     elif as_id:
         key = 'id'
@@ -116,9 +116,23 @@ def relabel(feature_table: biom.Table,
     else:
         current = 'sequence'
 
-    src_dst = reference_label_map[[current, key]]
-    src_dst_map = {getattr(r, current): getattr(r, key)
-                   for r in src_dst.itertuples()}
+    if as_asv:
+        # consider ASVs sub 500nt
+        is_asv = reference_label_map['sequence'].apply(lambda x: len(x) < 500)
+        subset = reference_label_map[is_asv][[current, 'sequence']]
+        src_dst_map = subset.set_index(current)['sequence'].to_dict()
+
+        if current == 'id':
+            ids = reference_label_map[~is_asv]['id']
+            to_id = {i: i for i in ids}
+        else:
+            outofsubset = reference_label_map[~is_asv][[current, 'id']]
+            to_id = outofsubset.set_index(current)['id'].to_dict()
+        src_dst_map.update(to_id)
+    else:
+        src_dst = reference_label_map[[current, key]]
+        src_dst_map = {getattr(r, current): getattr(r, key)
+                       for r in src_dst.itertuples()}
 
     return feature_table.update_ids(src_dst_map, inplace=False,
                                     axis='observation')

@@ -143,7 +143,7 @@ class GG2MethodTests(unittest.TestCase):
         table = biom.Table(np.arange(27).reshape(9, 3),
                            list('abcdefXYZ'),
                            ['s1', 's2', 's3'])
-        mapping = pd.DataFrame([['a', 'a1', 'a2'],
+        mapping = pd.DataFrame([['a', 'a1', 'a2' * 500],
                                 ['b', 'b1', 'b2'],
                                 ['c', 'c1', 'c2'],
                                 ['d', 'd1', 'd2'],
@@ -151,14 +151,14 @@ class GG2MethodTests(unittest.TestCase):
                                 ['f', 'f1', 'f2'],
                                 ['X', 'X1', 'X2'],
                                 ['Y', 'Y1', 'Y2'],
-                                ['Z', 'Z1', 'Z2']],
+                                ['Z', 'Z1', 'Z2' * 500]],
                                columns=['id', 'md5', 'sequence'])
 
         with self.assertRaises(ValueError):
-            relabel(table, mapping, as_md5=True, as_sequence=True)
+            relabel(table, mapping, as_md5=True, as_asv=True)
 
         with self.assertRaises(ValueError):
-            relabel(table, mapping, as_md5=True, as_sequence=True,
+            relabel(table, mapping, as_md5=True, as_asv=True,
                     as_id=True)
 
         exp = ["%s1" % i for i in table.ids(axis='observation')]
@@ -166,8 +166,11 @@ class GG2MethodTests(unittest.TestCase):
         self.assertEqual(list(obs.ids(axis='observation')),
                          exp)
 
+        # for ASV, only use ASV if the sequence appears short
         exp = ["%s2" % i for i in table.ids(axis='observation')]
-        obs = relabel(table, mapping, as_sequence=True)
+        exp[0] = 'a'
+        exp[-1] = 'Z'
+        obs = relabel(table, mapping, as_asv=True)
         self.assertEqual(list(obs.ids(axis='observation')),
                          exp)
 
