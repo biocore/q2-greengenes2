@@ -88,7 +88,7 @@ def filter_features(feature_table: biom.Table,
                     reference: NewickFormat) -> biom.Table:
     try:
         treedata = reference.read()
-    except:
+    except AttributeError:
         treedata = open(str(reference)).read()
     tree = bp.parse_newick(treedata)
 
