@@ -19,12 +19,20 @@ DF_COLUMNS = ['Feature ID', 'Taxon', 'Confidence']
 PAD = [f'{r}__' for r in 'dpcofgs']
 
 
-def _load_tree_and_cache(data):
+def _load_tree_and_cache(data, features):
     treedata = data.read()
-    tree = bp.to_skbio_treenode(bp.parse_newick(treedata))
+    tree = bp.parse_newick(treedata)
+    names = {tree.name(i) for i, v in enumerate(tree.B) if v}
+    tree = tree.shear(names & features)
+    tree = bp.to_skbio_treenode(tree)
+
     tree.ancestor_cache = []
     for node in tree.preorder(include_self=False):
-        node.ancestor_cache = [node.parent.name] + node.parent.ancestor_cache
+        if node.parent.is_root():
+            node.ancestor_cache = []
+        else:
+            parent_cache = node.parent.ancestor_cache
+            node.ancestor_cache = [node.parent.name] + parent_cache
     return tree
 
 
@@ -61,24 +69,27 @@ def _classify(tree, features):
 
 def taxonomy_from_features(reference_taxonomy: NewickFormat,
                            reads: DNAFASTAFormat) -> pd.DataFrame:
-    tree = _load_tree_and_cache(open(str(reference_taxonomy)))
     features = {r.metadata['id'] for r in skbio.read(str(reads),
                                                      format='fasta',
                                                      constructor=skbio.DNA)}
+    tree = _load_tree_and_cache(open(str(reference_taxonomy)), features)
     return _classify(tree, features)
 
 
 def taxonomy_from_table(reference_taxonomy: NewickFormat,
                         table: biom.Table) -> pd.DataFrame:
-    tree = _load_tree_and_cache(open(str(reference_taxonomy)))
     features = set(table.ids(axis='observation'))
+    tree = _load_tree_and_cache(open(str(reference_taxonomy)), features)
 
     return _classify(tree, features)
 
 
 def filter_features(feature_table: biom.Table,
                     reference: NewickFormat) -> biom.Table:
-    treedata = reference.read()
+    try:
+        treedata = reference.read()
+    except:
+        treedata = open(str(reference)).read()
     tree = bp.parse_newick(treedata)
 
     names = {tree.name(i) for i, v in enumerate(tree.B) if v}
