@@ -45,7 +45,6 @@ class UtilTests(unittest.TestCase):
                                                (expected_one, expected_two))
 
     def test_split_distance_matrix_raises_preparation(self):
-
         col_names = ['paired_sample']
         table = pd.DataFrame([['A2'], ['A1'], ['A5'],
                               [''], ['A3']], index=self.ind,
