@@ -32,7 +32,6 @@ class UtilTests(unittest.TestCase):
                                                (expected_one, expected_two))
 
     def test_split_distance_matrix_not_strict(self):
-
         table = pd.DataFrame([['A2', '16S'], ['A1', 'WGS'],
                               ['A5', '16S'], ['', '16S'],
                               ['A3', 'WGS']],
