@@ -158,7 +158,7 @@ def _compute_effect_size(distance_matrix_16s, distance_matrix_wgs,
     Parameters
     ----------
     distance_matrix_16s : skbio.DistanceMatrix
-        Distance matrix of 16s genes
+        Distance matrix of 16S genes
     distance_matrix_wgs : skbio.DistanceMatrix
         Distance matrix of WGS genes
     metadata : Metadata
