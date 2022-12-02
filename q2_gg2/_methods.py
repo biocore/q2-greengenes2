@@ -149,7 +149,7 @@ def _split_distance_matrix(distance_matrix,
 
 
 def _compute_effect_size(distance_matrix_16s, distance_matrix_wgs,
-                         metadata, columns=None, _max_level_by_category=5):
+                         metadata, columns=None, max_level_by_category=5):
 
     """ 
     Computes effect sizes of 16S and WGS distance
@@ -227,12 +227,12 @@ def _compute_effect_size(distance_matrix_16s, distance_matrix_wgs,
                             data=_16s,
                             sample_metadata=metadata_16s,
                             group_columns=columns,
-                            max_levels_per_category=_max_level_by_category)
+                            max_levels_per_category=max_level_by_category)
     _wgs_effect_size, = evident.methods.multivariate_effect_size_by_category(
                             data=wgs,
                             sample_metadata=metadata_wgs,
                             group_columns=columns,
-                            max_levels_per_category=_max_level_by_category)
+                            max_levels_per_category=max_level_by_category)
 
     # convert effect size to pandas dataframe
     effect_size_16 = _16s_effect_size.view(pd.DataFrame)
@@ -333,7 +333,7 @@ def compute_effect_size(output_dir: str,
                         metadata: qiime2.Metadata,
                         strict: bool = False,
                         columns: list = None,
-                        _max_level_by_category: int = 5) -> None:
+                        max_level_by_category: int = 5) -> None:
     distance_matrix_16s, distance_matrix_wgs = _split_distance_matrix(
                                                      distance_matrix,
                                                      metadata.to_dataframe(),
@@ -342,7 +342,7 @@ def compute_effect_size(output_dir: str,
                         distance_matrix_16s,
                         distance_matrix_wgs,
                         metadata, columns,
-                        _max_level_by_category)
+                        max_level_by_category)
 
     # compute correlation coefficient and p-value
     if (len(effect_sizes['column']) > 1):
