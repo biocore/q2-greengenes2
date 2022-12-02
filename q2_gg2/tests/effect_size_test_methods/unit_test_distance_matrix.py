@@ -71,7 +71,6 @@ class UtilTests(unittest.TestCase):
             _split_distance_matrix(self.dm, table)
 
     def test_split_distance_matrix_raises_too_many_preparations(self):
-
         table = pd.DataFrame([['A2', '16S'], ['A1', 'WGS'], ['A5', '16S'],
                               [None, '16S'], ['A3', 'RR']], index=self.ind,
                              columns=self.col_names)
