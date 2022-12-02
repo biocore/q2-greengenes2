@@ -207,7 +207,7 @@ def _compute_effect_size(distance_matrix_16s, distance_matrix_wgs,
              for i in columns):
         raise KeyError('Columns are not defined in metadata')
 
-    # separate Metadata between 16s and WGS
+    # separate Metadata between 16S and WGS
     metadata_16s = metadata.filter_ids(distance_matrix_16s.ids)
     metadata_wgs = metadata.filter_ids(distance_matrix_wgs.ids)
 
