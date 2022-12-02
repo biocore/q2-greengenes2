@@ -19,7 +19,6 @@ class UtilTests(unittest.TestCase):
         self.ind = pd.Index(['A1', 'A2', 'A3', 'A4', 'A5'])
 
     def test_split_distance_matrix_strict(self):
-
         table = pd.DataFrame([['A2', '16S'], ['A1', 'WGS'],
                               ['A5', '16S'], ['', '16S'],
                               ['A3', 'WGS']],
