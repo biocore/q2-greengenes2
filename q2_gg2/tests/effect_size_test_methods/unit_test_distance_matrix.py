@@ -54,7 +54,6 @@ class UtilTests(unittest.TestCase):
             _split_distance_matrix(self.dm, table)
 
     def test_split_distance_matrix_raises_paired_sample(self):
-
         col_names = ['preparation']
         table = pd.DataFrame([['16S'], ['WGS'], ['16S'],
                               ['16S'], ['WGS']], index=self.ind,
