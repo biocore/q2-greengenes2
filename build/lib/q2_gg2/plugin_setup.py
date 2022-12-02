@@ -139,8 +139,8 @@ plugin.visualizers.register_function(
         '_max_level_by_category': Int
     },
     input_descriptions={
-        'distance_matrix':  "The distance matrix to be split into its "
-                            "paired components"
+        'distance_matrix':  "The distance matrix to split into paired "
+                            "components"
     },
     parameter_descriptions={
         "strict": 'If true, limit the paired components to only samples '
@@ -154,11 +154,11 @@ plugin.visualizers.register_function(
                     'paired_sample, which describes pairing relationships, '
                     'and a column called preparation which describes '
                     'whether the sample is 16S or WGS.',
-        '_max_level_by_category': 'Maximum number of levels permitted for '
+        '_max_level_by_category': 'Maximum number of levels permitted for'
                                   'each categorical column present in the '
                                   'metadata.'
     },
-    name='Effect size calculations on 16s and WGS genes',
+    name='Effect size calculations on 16s and WGS genes ',
     description=('Computes the effect sizes from categorical variables '
                  'on 16S and WGS genes and produces a scatterplot of the '
                  'effect sizes.'),
