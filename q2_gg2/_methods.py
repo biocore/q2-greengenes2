@@ -132,7 +132,7 @@ def _split_distance_matrix(distance_matrix,
     _16s = _16s[_16s.index.isin(distance_matrix.ids)]
     _sg = _sg[_sg.index.isin(distance_matrix.ids)]
 
-# check strict
+    # check strict
     if strict is True:
         distance_matrix_16s = distance_matrix.filter(
                               _16s[_16s.index.isin(
