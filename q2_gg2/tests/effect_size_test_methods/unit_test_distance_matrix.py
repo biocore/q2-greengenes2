@@ -64,7 +64,6 @@ class UtilTests(unittest.TestCase):
             _split_distance_matrix(self.dm, table)
 
     def test_split_distance_matrix_raises_missing_preparation(self):
-
         table = pd.DataFrame([['A2', '16S'], ['A1', 'WGS'], ['A5', None],
                               ['', '16S'], ['A3', 'WGS']], index=self.ind,
                              columns=self.col_names)
