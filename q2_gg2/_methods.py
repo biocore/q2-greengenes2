@@ -152,7 +152,7 @@ def _compute_effect_size(distance_matrix_16s, distance_matrix_wgs,
                          metadata, columns=None, _max_level_by_category=5):
 
     """ 
-    Computes effect sizes of 16s and WGS distance
+    Computes effect sizes of 16S and WGS distance
     matrices from categorical columns in metadata
 
     Parameters
