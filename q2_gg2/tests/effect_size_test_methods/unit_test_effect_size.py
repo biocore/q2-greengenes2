@@ -11,7 +11,6 @@ import unittest
 
 class UtilTests(unittest.TestCase):
     def setUp(self):
-
         # construct distance matrix
         mat = np.random.uniform(0, 1, size=(100, 100))
         mat += mat.T
