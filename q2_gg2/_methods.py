@@ -124,7 +124,7 @@ def _split_distance_matrix(distance_matrix,
     elif any(i not in list(metadata.index) for i in distance_matrix.ids):
         raise ValueError('Sample data missing IDs in distance matrix')
 
-# Separate 16s and WGS
+    # Separate 16s and WGS
     _16s = metadata[metadata['preparation'] == '16S']
     _sg = metadata[metadata['preparation'] == 'WGS']
 
