@@ -128,7 +128,7 @@ def _split_distance_matrix(distance_matrix,
     _16s = metadata[metadata['preparation'] == '16S']
     _sg = metadata[metadata['preparation'] == 'WGS']
 
-# filter ID's that are in distance matrix
+    # filter ID's that are in distance matrix
     _16s = _16s[_16s.index.isin(distance_matrix.ids)]
     _sg = _sg[_sg.index.isin(distance_matrix.ids)]
 
