@@ -187,7 +187,6 @@ def _compute_effect_size(distance_matrix_16s, distance_matrix_wgs,
         of both the 16s and WGS data along with the
         column that the effect size is computed from.
     """
-
     # set optional columns argument
     if columns is None:
         metadata.filter_columns(column_type='categorical')
