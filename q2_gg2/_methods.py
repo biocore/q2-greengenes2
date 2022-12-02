@@ -112,8 +112,6 @@ def _split_distance_matrix(distance_matrix,
         A tuple where the first distance matrix are the 16S data, and the
         second distance matrix are the WGS data.
     """
-
-
 # RAISE ERRORS
     if 'paired_sample' not in metadata.columns:
         raise KeyError('Metadata must include paired_sample')
