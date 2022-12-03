@@ -150,8 +150,7 @@ def _split_distance_matrix(distance_matrix,
 
 def _compute_effect_size(distance_matrix_16s, distance_matrix_wgs,
                          metadata, columns=None, max_level_by_category=5):
-
-    """ 
+    """
     Computes effect sizes of 16S and WGS distance
     matrices from categorical columns in metadata
 
@@ -243,7 +242,7 @@ def _compute_effect_size(distance_matrix_16s, distance_matrix_wgs,
                                     'metric': 'metric_wgs'}, inplace=True)
     effect_sizes = pd.merge(effect_size_16, effect_size_wgs,
                             how='outer', on='column')
-    return(effect_sizes)
+    return effect_sizes
 
 
 def taxonomy_from_features(reference_taxonomy: NewickFormat,
