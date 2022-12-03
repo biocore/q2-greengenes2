@@ -13,6 +13,14 @@ import skbio
 import biom
 import pandas as pd
 import bp
+import q2templates
+import os
+import pkg_resources
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy import stats
+from qiime2.plugins import evident
+import qiime2
 
 
 DF_COLUMNS = ['Feature ID', 'Taxon', 'Confidence']
@@ -65,6 +73,177 @@ def _classify(tree, features):
                     _fetch_unclassified(unclassified)])
 
     return df.set_index('Feature ID')
+
+
+def _split_distance_matrix(distance_matrix,
+                           metadata, strict=False):
+    """Split a distance matrix into its paired components
+
+    Parameters
+    ----------
+    distance_matrix : skbio.DistanceMatrix
+        The distance matrix to split into paired components
+    metadata : pd.DataFrame
+        The metadata to use to inform the split. We are assuming the DataFrame
+        contains a column called 'paired_sample', which describes pairing
+        relationships, and a column called 'preparation' which describes
+        whether the sample is '16S' or 'WGS'.
+    strict : bool
+        If true, limit the paired components to only samples which exist in
+        both preparations, e.g., a sample's 'paired_sample' also exists in the
+        distance matrix
+
+    Notes
+    -----
+    The sample metadata may be a superset of the samples in the distance matrix
+
+    Raises
+    ------
+    KeyError
+        If 'paired_sample' or 'preparation' do not exist as columns in the
+        DataFrame
+    ValueError
+        If more than 2 or less than 2 unique 'preparation's, with samples in
+        the distance matrix, exists
+
+    Returns
+    -------
+    skbio.DistanceMatrix, skbio.DistanceMatrix
+        A tuple where the first distance matrix are the 16S data, and the
+        second distance matrix are the WGS data.
+    """
+    # RAISE ERRORS
+    if 'paired_sample' not in metadata.columns:
+        raise KeyError('Metadata must include paired_sample')
+    elif 'preparation' not in metadata.columns:
+        raise KeyError('Metadata must include preparation')
+    elif any(metadata['preparation'].isnull()):
+        raise ValueError('Missing preparations')
+    elif len(set(metadata['preparation'])) != 2:
+        raise ValueError('Must have exactly 2 unique prepartions')
+    elif any(i not in list(metadata.index) for i in distance_matrix.ids):
+        raise ValueError('Sample data missing IDs in distance matrix')
+
+    # Separate 16s and WGS
+    _16s = metadata[metadata['preparation'] == '16S']
+    _sg = metadata[metadata['preparation'] == 'WGS']
+
+    # filter ID's that are in distance matrix
+    _16s = _16s[_16s.index.isin(distance_matrix.ids)]
+    _sg = _sg[_sg.index.isin(distance_matrix.ids)]
+
+    # check strict
+    if strict is True:
+        distance_matrix_16s = distance_matrix.filter(
+                              _16s[_16s.index.isin(
+                                _sg['paired_sample'])].index)
+        distance_matrix_sg = distance_matrix.filter(
+                             _sg[_sg.index.isin(
+                                _16s['paired_sample'])].index)
+    else:
+        distance_matrix_16s = distance_matrix.filter(_16s.index)
+        distance_matrix_sg = distance_matrix.filter(_sg.index)
+
+# return tuple
+    return (distance_matrix_16s, distance_matrix_sg)
+
+
+def _compute_effect_size(distance_matrix_16s, distance_matrix_wgs,
+                         metadata, columns=None, max_level_by_category=5):
+
+    """ 
+    Computes effect sizes of 16S and WGS distance
+    matrices from categorical columns in metadata
+
+    Parameters
+    ----------
+    distance_matrix_16s : skbio.DistanceMatrix
+        Distance matrix of 16S genes
+    distance_matrix_wgs : skbio.DistanceMatrix
+        Distance matrix of WGS genes
+    metadata : Metadata
+        The metadata with categorical columns to compute
+        the effect sizes.
+    columns : list of strings
+        If None, all categorical columns will be used to
+        compute effect sizes. Else, only specified columns
+        will be used to compute effect sizes.
+    _max_level_by_category : int
+        The maximum number of levels allowed per categorical
+        column. Default is 5.
+
+    Raises
+    ------
+    KeyError
+        If there is less than one categorical column, or if
+        specified columns are not present in the metadata.
+    ValueError
+        If either distance matrix dimensions are less than 2
+
+    Returns
+    -------
+    pd.Dataframe
+        Dataframe that includes the effect size and metric
+        of both the 16s and WGS data along with the
+        column that the effect size is computed from.
+    """
+    # set optional columns argument
+    if columns is None:
+        metadata.filter_columns(column_type='categorical')
+        columns = list(metadata.to_dataframe().columns.values)
+        columns.remove('paired_sample')
+        columns.remove('preparation')
+
+    # RAISE ERRORS IF
+    # check if there exists at least one categorical column to
+    # compute effect size
+    if len(columns) < 1:
+        raise KeyError('Must include at least one categorical column')
+    # check if the split distance matrix dimensions are greater than 1
+    elif distance_matrix_16s.shape[0] < 2 or distance_matrix_wgs.shape[0] < 2:
+        raise ValueError('Distance matrix dimensions must be larger than 1x1')
+    # check if columns argument are columns in the metadata
+    elif any(i not in list(metadata.to_dataframe().columns.values)
+             for i in columns):
+        raise KeyError('Columns are not defined in metadata')
+
+    # separate Metadata between 16S and WGS
+    metadata_16s = metadata.filter_ids(distance_matrix_16s.ids)
+    metadata_wgs = metadata.filter_ids(distance_matrix_wgs.ids)
+
+    # only include relevant columns in metadata
+    # before passing it into effect size calculations
+    metadata_16s = metadata_16s.to_dataframe()[columns]
+    metadata_wgs = metadata_wgs.to_dataframe()[columns]
+    metadata_16s = qiime2.Metadata(metadata_16s)
+    metadata_wgs = qiime2.Metadata(metadata_wgs)
+
+    # convert skbio.DistanceMatrix to DistanceMatrix Artifact
+    _16s = qiime2.Artifact.import_data('DistanceMatrix', distance_matrix_16s)
+    wgs = qiime2.Artifact.import_data('DistanceMatrix', distance_matrix_wgs)
+
+    # calculate effect sizes
+    _16s_effect_size, = evident.methods.multivariate_effect_size_by_category(
+                            data=_16s,
+                            sample_metadata=metadata_16s,
+                            group_columns=columns,
+                            max_levels_per_category=max_level_by_category)
+    _wgs_effect_size, = evident.methods.multivariate_effect_size_by_category(
+                            data=wgs,
+                            sample_metadata=metadata_wgs,
+                            group_columns=columns,
+                            max_levels_per_category=max_level_by_category)
+
+    # convert effect size to pandas dataframe
+    effect_size_16 = _16s_effect_size.view(pd.DataFrame)
+    effect_size_wgs = _wgs_effect_size.view(pd.DataFrame)
+    effect_size_16.rename(columns={'effect_size': 'effect_size_16s',
+                                   'metric': 'metric_16s'}, inplace=True)
+    effect_size_wgs.rename(columns={'effect_size': 'effect_size_wgs',
+                                    'metric': 'metric_wgs'}, inplace=True)
+    effect_sizes = pd.merge(effect_size_16, effect_size_wgs,
+                            how='outer', on='column')
+    return(effect_sizes)
 
 
 def taxonomy_from_features(reference_taxonomy: NewickFormat,
@@ -147,3 +326,54 @@ def relabel(feature_table: biom.Table,
 
     return feature_table.update_ids(src_dst_map, inplace=False,
                                     axis='observation')
+
+
+def compute_effect_size(output_dir: str,
+                        distance_matrix: skbio.DistanceMatrix,
+                        metadata: qiime2.Metadata,
+                        strict: bool = False,
+                        columns: list = None,
+                        max_level_by_category: int = 5) -> None:
+    distance_matrix_16s, distance_matrix_wgs = _split_distance_matrix(
+                                                     distance_matrix,
+                                                     metadata.to_dataframe(),
+                                                     strict)
+    effect_sizes = _compute_effect_size(
+                        distance_matrix_16s,
+                        distance_matrix_wgs,
+                        metadata, columns,
+                        max_level_by_category)
+
+    # compute correlation coefficient and p-value
+    if (len(effect_sizes['column']) > 1):
+        pearson_result = stats.pearsonr(effect_sizes['effect_size_16s'],
+                                        effect_sizes['effect_size_wgs'])
+    else:
+        pearson_result = (0, 0)
+
+    # create scatterplot
+    m, b = np.polyfit(effect_sizes['effect_size_16s'],
+                      effect_sizes['effect_size_wgs'], 1)
+    plt.scatter(effect_sizes['effect_size_16s'],
+                effect_sizes['effect_size_wgs'])
+    plt.plot(effect_sizes['effect_size_16s'], m *
+             effect_sizes['effect_size_16s'] + b)
+    plt.xlim([min(effect_sizes['effect_size_16s']) * .9,
+              max(effect_sizes['effect_size_16s']) * 1.1])
+    plt.ylim([min(effect_sizes['effect_size_16s']) * .9,
+              max(effect_sizes['effect_size_wgs']) * 1.1])
+    plt.title('Scatterplot of Effect Sizes')
+    plt.xlabel('16s Effect Sizes')
+    plt.ylabel('WGS Effect Sizes')
+    plt.text(0.1, 0.02, 'r = %0.2f, p = %0.2e' % pearson_result,
+             transform=plt.gcf().transFigure, color='red')
+    plt.savefig(os.path.join(output_dir, 'scatter.png'))
+    plt.close()
+
+    # download effect size table
+    effect_sizes.to_csv(os.path.join(output_dir, 'table.tsv'), sep='\t')
+
+    TEMPLATES = pkg_resources.resource_filename(
+        'q2_gg2', 'compute_effect_size_assets')
+    index = os.path.join(TEMPLATES, 'index.html')
+    q2templates.render(index, output_dir, context={})

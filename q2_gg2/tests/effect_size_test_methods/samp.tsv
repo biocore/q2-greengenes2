@@ -1,0 +1,101 @@
+sampleid	paired_sample	preparation	category1	category2
+A1	A2	16S	yes	a
+A2	A1	WGS	no	b
+A3	A5	16S	yes	b
+A4		WGS	no	b
+A5	A3	16S	yes	a
+A6	A14	WGS	yes	a
+A7	A13	16S	no	b
+A8		16S	no	a
+A9	A15	WGS		b
+A10		WGS	yes	b
+A11	A12	WGS	no	b
+A12	A11	16S	yes	b
+A13	A7	WGS	no	b
+A14	A6	16S	yes	b
+A15	A9	16S	yes	b
+A16	A24	WGS	no	a
+A17		16S	no	b
+A18		WGS	yes	b
+A19		WGS	yes	b
+A20		16S	yes	a
+A21		WGS	yes	a
+A22		WGS	yes	b
+A23		16S	no	b
+A24	A16	16S	no	a
+A25	A39	16S	no	b
+A26		16S	no	b
+A27	A40	WGS	no	b
+A28		16S	yes	b
+A29	A34	16S	yes	b
+A30		16S	no	b
+A31		WGS	no	b
+A32		WGS	yes	a
+A33	A42	16S	no	b
+A34	A29	WGS	no	a
+A35	A44	16S	yes	a
+A36	A43	16S	no	a
+A37	A46	16S	yes	b
+A38		16S	no	b
+A39	A25	WGS	no	b
+A40	A27	16S	no	a
+A41		16S	yes	a
+A42	A33	WGS	no	b
+A43	A36	WGS	yes	a
+A44	A35	WGS	no	a
+A45	A56	16S	no	a
+A46	A37	WGS	yes	a
+A47		16S	yes	b
+A48		16S	no	b
+A49		16S	yes	b
+A50	A58	WGS	yes	b
+A51		WGS	yes	b
+A52		WGS	no	b
+A53	A63	16S	yes	b
+A54		16S	no	b
+A55	A64	16S	yes	a
+A56	A45	WGS	no	b
+A57		WGS	no	b
+A58	A50	16S	no	a
+A59		16S	no	b
+A60		WGS	no	b
+A61		16S	no	a
+A62		16S	no	a
+A63	A53	WGS	no	b
+A64	A55	WGS	yes	b
+A65		16S	yes	b
+A66		16S	yes	b
+A67	A81	WGS	yes	b
+A68	A86	WGS	no	a
+A69	A79	WGS	no	b
+A70		16S	yes	b
+A71		16S	no	b
+A72	A85	WGS	no	a
+A73	A78	16S	no	b
+A74		16S	yes	b
+A75	A84	WGS	no	b
+A76		16S	yes	b
+A77	A82	WGS	yes	a
+A78	A73	WGS	no	b
+A79	A69	16S	yes	b
+A80	A83	WGS	yes	a
+A81	A67	16S	yes	a
+A82	A77	16S	no	a
+A83	A80	16S	yes	b
+A84	A75	16S	no	a
+A85	A72	16S	no	b
+A86	A68	16S	no	a
+A87	A88	16S	yes	b
+A88	A87	WGS	yes	b
+A89	A100	16S	no	b
+A90	A92	WGS	yes	a
+A91	A97	WGS	no	a
+A92	A90	16S	no	b
+A93	A96	WGS	yes	a
+A94	A99	16S	no	b
+A95	A98	WGS	no	b
+A96	A93	16S	yes	a
+A97	A91	16S	no	b
+A98	A95	16S	yes	b
+A99	A94	WGS	no	b
+A100	A89	WGS	yes	b
