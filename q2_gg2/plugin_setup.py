@@ -136,7 +136,7 @@ plugin.visualizers.register_function(
         'strict': Bool,
         'columns': List[Str],
         'metadata': Metadata,
-        '_max_level_by_category': Int
+        'max_level_by_category': Int
     },
     input_descriptions={
         'distance_matrix':  "The distance matrix to be split into its "
@@ -154,7 +154,7 @@ plugin.visualizers.register_function(
                     'paired_sample, which describes pairing relationships, '
                     'and a column called preparation which describes '
                     'whether the sample is 16S or WGS.',
-        '_max_level_by_category': 'Maximum number of levels permitted for '
+        'max_level_by_category': 'Maximum number of levels permitted for '
                                   'each categorical column present in the '
                                   'metadata.'
     },
