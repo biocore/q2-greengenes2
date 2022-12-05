@@ -7,7 +7,7 @@
 # ----------------------------------------------------------------------------
 from ._methods import (taxonomy_from_table, taxonomy_from_features,
                        filter_features, relabel, compute_effect_size)
-from . import _version
-__version__ = _version.get_versions()['version']
+from ._version import get_versions
+__version__ = get_versions()['version']
 __all__ = ['taxonomy_from_table', 'taxonomy_from_features',
            'filter_features', 'relabel', 'compute_effect_size']
