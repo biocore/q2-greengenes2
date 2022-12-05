@@ -155,8 +155,8 @@ plugin.visualizers.register_function(
                     'and a column called preparation which describes '
                     'whether the sample is 16S or WGS.',
         'max_level_by_category': 'Maximum number of levels permitted for '
-                                  'each categorical column present in the '
-                                  'metadata.'
+                                 'each categorical column present in the '
+                                 'metadata.'
     },
     name='Effect size calculations on 16s and WGS genes',
     description=('Computes the effect sizes from categorical variables '
