@@ -10,7 +10,6 @@ import os
 import pkg_resources
 import json
 import re
-from pathlib import Path
 import hashlib
 
 import qiime2
@@ -44,7 +43,6 @@ DF_COLUMNS = ['Feature ID', 'Taxon', 'Confidence']
 PAD = [f'{r}__' for r in 'dpcofgs']
 
 
-<<<<<<< HEAD
 def _infer_feature_data_labels(df):
     gtdb = re.compile(r'G\d{9}')
     operon = re.compile(r'M.\d{3}-\d-barcode\d+-umi\d+bins-ubs-\d')
@@ -121,12 +119,12 @@ def clade_lookup(taxonomy_as_tree: NewickFormat,
     lookup_data = {}
     for n in tree.non_tips():
         name = n.name
-        if n.name is None or len(n.name) == 3:  # eg s__
+        if name is None or len(name) == 3:  # eg s__
             continue
 
-        if n.name not in lookup_data:
-            lookup_data[n.name] = {'type': 'lookup', 'parent': set(),
-                                   'children': [], 'name': n.name}
+        if name not in lookup_data:
+            lookup_data[name] = {'type': 'lookup', 'parent': set(),
+                                 'children': [], 'name': name}
 
         parent = n.parent.name
         children = [c.name for c in n.children
@@ -138,9 +136,9 @@ def clade_lookup(taxonomy_as_tree: NewickFormat,
         # is not constructing assured unique names when a name is polyphyletic.
 
         if parent is not None:
-            lookup_data[n.name]['parent'].add(parent)
+            lookup_data[name]['parent'].add(parent)
 
-        lookup_data[n.name]['children'].extend(children)
+        lookup_data[name]['children'].extend(children)
 
     for k, v in lookup_data.items():
         v['parent'] = list(v['parent'])
@@ -256,7 +254,6 @@ def bulk_sequence_v4_asv_assessment(phylogeny: NewickFormat, taxa: pd.DataFrame,
             continue
 
         asv = sequences[asv_id]
-        start = time.time()
         detail = _sequence_v4_asv_assessment(tree, sequences, full_length_v4,
                                              taxa, asv, rbmd)
 
@@ -276,7 +273,6 @@ def sequence_v4_asv_assessment(phylogeny: NewickFormat, taxa: pd.DataFrame,
     sequences = {i: s for i, s in _fast_parse_fasta(str(sequences))
                  if i not in full_length_v4}
     taxa['Type'] = _infer_feature_data_labels(taxa)
-    start = time.time()
     rbmd = _stage_redbiom_metadata()
     return _sequence_v4_asv_assessment(tree, sequences, full_length_v4, taxa,
                                        asv, rbmd)
@@ -287,8 +283,6 @@ def _sequence_v4_asv_assessment(tree, sequences, full_length_v4, taxa, asv,
     # assumes tree is by ID
     # assumes taxonomy is by ID
     # assumes sequence data are by ID
-    import time
-    start = time.time()
     asv_id = None
     asv_hash = None
     for k, v in sequences.items():
@@ -300,7 +294,6 @@ def _sequence_v4_asv_assessment(tree, sequences, full_length_v4, taxa, asv,
     if asv_id is None:
         raise ValueError("ASV %s not found in sequences" % asv)
 
-    start = time.time()
     node_idx = None
     for idx, v in enumerate(tree.B):
         if v:
@@ -321,11 +314,10 @@ def _sequence_v4_asv_assessment(tree, sequences, full_length_v4, taxa, asv,
     # clade
 
     # obtain other ASVs within the same multifurcation
-    start = time.time()
     parent_start = tree.parent(node_idx)
     parent_close = tree.close(parent_start)
     multifurcation_members = []
-    is_multifurcation = True
+
     for idx in range(parent_start, parent_close):
         # nsibling and psibling could be used but we'd have to iterate in
         # both directions so meh
@@ -334,19 +326,14 @@ def _sequence_v4_asv_assessment(tree, sequences, full_length_v4, taxa, asv,
             if name != asv_id:
                 if taxa.loc[name]['Type'] == 'ASV':
                     multifurcation_members.append(name)
-                else:
-                    is_multifurcation = False
 
     # determine what full length if any this ASV exists in
-    start = time.time()
     observed_in = []
     for id_, seq in full_length_v4.items():
         if asv in seq:
             seq_lineage = taxa.loc[id_, 'Taxon']
             observed_in.append([id_, seq_lineage])
 
-
-    start = time.time()
     rbdetail = _sequence_v4_redbiom_summary([asv, ], rbmd)
 
     return ASVAssessment({'asv': asv,
@@ -354,9 +341,7 @@ def _sequence_v4_asv_assessment(tree, sequences, full_length_v4, taxa, asv,
                           'lineage': lineage,
                           'md5': asv_hash,
                           'observed_in_full_length': list(observed_in),
-                          #'full_length_in_enclosing_clade': \
-                          #    full_length_in_enclosing,
-                          'multifurcation_members': len(multifurcation_members),
+                          'multifurcation_members': len(multifurcation_members),  # noqa
                           'redbiom': rbdetail})  # noqa
 
 
@@ -475,7 +460,7 @@ def _clade_v4_assessment_tree_coordinates(tree, taxa, full_length_v4,
     clade_features |= {sequences[i] for i in clade_taxa.index
                        if i in sequences}
     observed_v4_isolates = [[k, full_length_v4[k]] for k in isolates.index
-                             if k in full_length_v4]
+                            if k in full_length_v4]
     observed_v4_fragments = [[k, sequences[k]] for k in asvs.index]
     observed_v4_fragments_lookup = {s for _, s in observed_v4_fragments}
 
@@ -545,14 +530,12 @@ def _clade_v4_assessment_tree_coordinates(tree, taxa, full_length_v4,
     return {'observed_v4_isolate': observed_v4_isolates,
             'observed_v4_fragment': observed_v4_fragments,
             'in_clade_matching_v4_fragment_and_full_length': in_clade_v4_match,
-            'out_clade_matching_v4_fragment_and_full_length': out_clade_v4_match,
+            'out_clade_matching_v4_fragment_and_full_length': out_clade_v4_match,  # noqa
             'unobserved_v4_isolate_fragments': unobserved_v4_isolate_fragments,
             'out_clade_lineages': out_clade_lineages,
             'redbiom': asv_rb_detail}
 
 
-=======
->>>>>>> e33bdfe1511d02cdaa4f0304869b0cd9668b5562
 def _load_tree_and_cache(data, features):
     treedata = data.read()
     tree = bp.parse_newick(treedata)
@@ -794,11 +777,7 @@ def filter_features(feature_table: biom.Table,
                     reference: NewickFormat) -> biom.Table:
     try:
         treedata = reference.read()
-<<<<<<< HEAD
-    except:
-=======
     except AttributeError:
->>>>>>> e33bdfe1511d02cdaa4f0304869b0cd9668b5562
         treedata = open(str(reference)).read()
     tree = bp.parse_newick(treedata)
 

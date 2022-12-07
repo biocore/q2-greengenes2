@@ -16,4 +16,6 @@ __version__ = _version.get_versions()['version']
 __all__ = ['taxonomy_from_table', 'taxonomy_from_features',
            'filter_features', 'relabel', 'clade_v4_asv_assessment',
            'bulk_clade_v4_asv_assessment', 'clade_lookup',
+           'sequence_v4_asv_assessment',
+           'bulk_sequence_v4_asv_assessment',
            'compute_effect_size']

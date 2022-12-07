@@ -15,9 +15,6 @@ import pandas as pd
 import pandas.testing as pdt
 import bp
 import skbio
-#from q2_types.feature_data import DNAIterator
-from q2_types.tree import NewickFormat
-from q2_types.feature_data import DNAFASTAFormat
 
 from q2_gg2._methods import (_load_tree_and_cache,
                              _fetch_taxonomy,
@@ -112,7 +109,7 @@ class GG2MethodTests(unittest.TestCase):
                'observed_v4_fragment': [['00000000', 'CATG'],
                                         ['00000001', 'CATT']],
                'in_clade_matching_v4_fragment_and_full_length': [['a', 'CATG'],
-                                                             ['b', 'CATG']],
+                                                                 ['b', 'CATG']],  # noqa
                'out_clade_matching_v4_fragment_and_full_length': [],
                'out_clade_lineages': {},
                'unobserved_v4_isolate_fragments': [],
@@ -155,7 +152,7 @@ class GG2MethodTests(unittest.TestCase):
                'observed_v4_fragment': [['00000000', 'ATG'],
                                         ['00000001', 'CAT']],
                'in_clade_matching_v4_fragment_and_full_length': [['a', 'CATG'],
-                                                             ['b', 'CATG']],
+                                                                 ['b', 'CATG']],  # noqa
                'out_clade_matching_v4_fragment_and_full_length': [['c', 'CATG'], ],  # noqa
                'out_clade_lineages': {'CATG': ['s__bar', ]},
                'unobserved_v4_isolate_fragments': ['a', 'b'],

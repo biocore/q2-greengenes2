@@ -10,6 +10,7 @@ import qiime2.plugin.model as model
 from qiime2.plugin import ValidationError
 import json
 
+
 # adapted from q2-demux ErrorCorrectionDetailsFmt
 class ReferenceMapFmt(model.TextFileFormat):
     METADATA_COLUMNS = ['id', 'md5', 'sequence']
@@ -30,7 +31,7 @@ class CladeAssessmentFmt(model.TextFileFormat):
         line = open(str(self)).read()
         try:
             data = json.loads(line)
-        except:
+        except:  # noqa
             raise ValidationError("Data do not appear to be JSON")
         if 'clades' not in data:
             raise ValidationError("Data do not appear to be a CladeAssessment")
@@ -41,7 +42,7 @@ class ASVAssessmentFmt(model.TextFileFormat):
         line = open(str(self)).read()
         try:
             data = json.loads(line)
-        except:
+        except:  # noqa
             raise ValidationError("Data do not appear to be JSON")
         if 'asv' not in data:
             raise ValidationError("Data do not appear to be a ASVAssessment")

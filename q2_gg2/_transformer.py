@@ -39,7 +39,7 @@ def _4(ff: ASVAssessmentFmt) -> ASVAssessment:
 
 
 @plugin.register_transformer
-def _4(data: ASVAssessment) -> ASVAssessmentFmt:
+def _5(data: ASVAssessment) -> ASVAssessmentFmt:
     ff = ASVAssessmentFmt()
     with open(str(ff), 'w') as fp:
         fp.write(json.dumps(data, indent=2))
