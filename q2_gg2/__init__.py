@@ -6,8 +6,12 @@
 # The full license is in the file LICENSE, distributed with this software.
 # ----------------------------------------------------------------------------
 from ._methods import (taxonomy_from_table, taxonomy_from_features,
-                       filter_features, relabel)
+                       filter_features, relabel, clade_v4_asv_assessment,
+                       bulk_clade_v4_asv_assessment,
+                       sequence_v4_asv_assessment,
+                       bulk_sequence_v4_asv_assessment, clade_lookup)
 from . import _version
 __version__ = _version.get_versions()['version']
 __all__ = ['taxonomy_from_table', 'taxonomy_from_features',
-           'filter_features', 'relabel']
+           'filter_features', 'relabel', 'clade_v4_asv_assessment',
+           'bulk_clade_v4_asv_assessment', 'clade_lookup']

@@ -26,8 +26,12 @@ Unless otherwise indicated, the feature IDs present in the artifacts use the WoL
 	A Newick version of the taxonomy where internal nodes are taxa, and tips are feature IDs
 * `gg2-<version>-taxonomy.tsv.qza`
 	The taxonomy data in the classic tab delimited format
-* `gg2-<version>-phylogeny.qza`
-	A phylogeny representing all of the Greengenes2 features
+* `gg2-<version>-phylogeny.ids.newick.qza`
+	A phylogeny representing all of the Greengenes2 features with IDs as tips
+* `gg2-<version>-phylogeny.md5.newick.qza`
+	A phylogeny representing all of the Greengenes2 features with ASVs as MD5 for tips
+* `gg2-<version>-phylogeny.asv.newick.qza`
+	A phylogeny representing all of the Greengenes2 features with ASVs as their sequences for tips
 * `gg2-<version>-label_map.qza`
 	A tab delimited map of sequence ID, md5 hash of a sequence, and the sequence itself
 * `gg2-<version>-sequences.fna.gz`

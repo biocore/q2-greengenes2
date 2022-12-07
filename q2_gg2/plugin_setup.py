@@ -7,13 +7,14 @@
 # ----------------------------------------------------------------------------
 
 import importlib
-from qiime2.plugin import Plugin, Bool
+from qiime2.plugin import Plugin, Bool, Str, Int
 from q2_types.feature_table import FeatureTable, Frequency
 from q2_types.feature_data import FeatureData, Taxonomy, Sequence
 from q2_types.tree import Phylogeny, Rooted
 import q2_gg2
-from ._type import ReferenceMap
-from ._format import ReferenceMapDirFmt
+from ._type import ReferenceMap, CladeAssessment, ASVAssessment
+from ._format import (ReferenceMapDirFmt, CladeAssessmentDirFmt,
+                      ASVAssessmentDirFmt)
 
 
 plugin = Plugin(
@@ -27,16 +28,156 @@ plugin = Plugin(
 
 
 plugin.register_semantic_types(
-    ReferenceMap
+    ReferenceMap, CladeAssessment, ASVAssessment
 )
 
 
-plugin.register_formats(ReferenceMapDirFmt)
+plugin.register_formats(ReferenceMapDirFmt,
+                        CladeAssessmentDirFmt,
+                        ASVAssessmentDirFmt)
 
 
 plugin.register_semantic_type_to_format(
     ReferenceMap,
     artifact_format=ReferenceMapDirFmt
+)
+
+
+plugin.register_semantic_type_to_format(
+    CladeAssessment,
+    artifact_format=CladeAssessmentDirFmt
+)
+
+
+plugin.register_semantic_type_to_format(
+    ASVAssessment,
+    artifact_format=ASVAssessmentDirFmt
+)
+
+
+plugin.methods.register_function(
+    function=q2_gg2.clade_v4_asv_assessment,
+    inputs={'phylogeny': Phylogeny[Rooted],
+            'taxa': FeatureData[Taxonomy],
+            'full_length_v4': FeatureData[Sequence],
+            'sequences': FeatureData[Sequence]},
+    parameters={'clade': Str},
+    outputs=[('characterization', CladeAssessment)],
+    input_descriptions={
+        'phylogeny': 'The ID annotated phylogeny',
+        'taxa': 'The taxa indexed by ID',
+        'full_length_v4': 'The extracted V4 sequences from the backbone',
+        'sequences': 'The full set of GG2 sequences'},
+    parameter_descriptions={
+        'clade': 'The clade to search for',
+        },
+    output_descriptions={
+        'characterization': "The clade characterization detail"},
+    name='Clade ASV level assessment',
+    description=("Test whether the clade is uniquely represented by ASVs "
+                 "and other summary information about the clade"),
+    citations=[]
+)
+
+
+plugin.methods.register_function(
+    function=q2_gg2.sequence_v4_asv_assessment,
+    inputs={'phylogeny': Phylogeny[Rooted],
+            'taxa': FeatureData[Taxonomy],
+            'full_length_v4': FeatureData[Sequence],
+            'sequences': FeatureData[Sequence]},
+    parameters={'asv': Str},
+    outputs=[('characterization', ASVAssessment)],
+    input_descriptions={
+        'phylogeny': 'The ID annotated phylogeny',
+        'taxa': 'The taxa indexed by ID',
+        'full_length_v4': 'The extracted V4 sequences from the backbone',
+        'sequences': 'The full set of GG2 sequences'},
+    parameter_descriptions={
+        'asv': 'The ASV sequence to summarize',
+        },
+    output_descriptions={
+        'characterization': "The ASV characterization detail"},
+    name='ASV assessment',
+    description=("Check what full length records the ASV associates with "
+                 "and members within its placement multifurcation"),
+    citations=[]
+)
+
+
+plugin.methods.register_function(
+    function=q2_gg2.bulk_sequence_v4_asv_assessment,
+    inputs={'phylogeny': Phylogeny[Rooted],
+            'taxa': FeatureData[Taxonomy],
+            'full_length_v4': FeatureData[Sequence],
+            'sequences': FeatureData[Sequence]},
+    parameters={'group': Int,
+                'version': Str,
+                'output_filename': Str},
+    outputs=[('characterization', ASVAssessment)],
+    input_descriptions={
+        'phylogeny': 'The ID annotated phylogeny',
+        'taxa': 'The taxa indexed by ID',
+        'full_length_v4': 'The extracted V4 sequences from the backbone',
+        'sequences': 'The full set of GG2 sequences'},
+    parameter_descriptions={
+        'group': 'The hash group to process',
+        'version': 'The database version to use',
+        'output_filename': 'The file to write assessments too'
+        },
+    output_descriptions={
+        'characterization': "This output is undefined"},
+    name='Bulk ASV assessment',
+    description=("Check what full length records the ASV associates with "
+                 "and members within its placement multifurcation"),
+    citations=[]
+)
+
+
+plugin.methods.register_function(
+    function=q2_gg2.bulk_clade_v4_asv_assessment,
+    inputs={'phylogeny': Phylogeny[Rooted],
+            'taxa': FeatureData[Taxonomy],
+            'full_length_v4': FeatureData[Sequence],
+            'sequences': FeatureData[Sequence]},
+    parameters={'group': Int,
+                'version': Str,
+                'output_filename': Str},
+    outputs=[('characterization', CladeAssessment)],
+    input_descriptions={
+        'phylogeny': 'The ID annotated phylogeny',
+        'taxa': 'The taxa indexed by ID',
+        'full_length_v4': 'The extracted V4 sequences from the backbone',
+        'sequences': 'The full set of GG2 sequences'},
+    parameter_descriptions={
+        'group': 'The hash group to process',
+        'version': 'The database version to use',
+        'output_filename': 'The file to write assessments too'
+        },
+    output_descriptions={'characterization': 'This output is undefined'},
+    name='Bulk Clade ASV level assessment',
+    description=("Test whether the clade is uniquely represented by ASVs "
+                 "and other summary information about the clade"),
+    citations=[]
+)
+
+
+plugin.methods.register_function(
+    function=q2_gg2.clade_lookup,
+    inputs={'taxonomy_as_tree': Phylogeny[Rooted]},
+    parameters={'version': Str,
+                'output_filename': Str},
+    outputs=[('characterization', CladeAssessment)],
+    input_descriptions={
+        'taxonomy_as_tree': 'The taxonomy represented as a newick string'},
+    parameter_descriptions={
+        'version': 'The database version to use',
+        'output_filename': 'The file to write the lookup too'
+        },
+    output_descriptions={'characterization': 'This output is undefined'},
+    description=("Construct a taxonomy lookup suitable for a sqlite database"),
+    citations=[],
+    name='Construct a clade lookup'
 )
 
 
