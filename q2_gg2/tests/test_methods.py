@@ -104,7 +104,8 @@ class GG2MethodTests(unittest.TestCase):
                for r in skbio.read(io.StringIO(isolates_v4),
                                    format='fasta',
                                    constructor=skbio.DNA)}
-        obs = _clade_v4_asv_assessment(tree, taxa, iso, seqs, 's__foo', {})
+        obs = _clade_v4_asv_assessment(tree, taxa, iso, seqs, 's__foo',
+                                       pd.DataFrame())
         exp = {'observed_v4_isolate': [['a', 'CATG'], ['b', 'CATG']],
                'observed_v4_fragment': [['00000000', 'CATG'],
                                         ['00000001', 'CATT']],
@@ -147,7 +148,8 @@ class GG2MethodTests(unittest.TestCase):
                for r in skbio.read(io.StringIO(isolates_v4),
                                    format='fasta',
                                    constructor=skbio.DNA)}
-        obs = _clade_v4_asv_assessment(tree, taxa, iso, seqs, 's__foo', {})
+        obs = _clade_v4_asv_assessment(tree, taxa, iso, seqs, 's__foo',
+                                       pd.DataFrame())
         exp = {'observed_v4_isolate': [['a', 'CATG'], ['b', 'CATG']],
                'observed_v4_fragment': [['00000000', 'ATG'],
                                         ['00000001', 'CAT']],
@@ -212,7 +214,8 @@ class GG2MethodTests(unittest.TestCase):
                'full_length_in_enclosing_clade': ['a', ],
                'multifurcation_members': 1,  # ['00000001', ]}
                'redbiom': {}}
-        obs = _sequence_v4_asv_assessment(tree, seqs, iso, taxa, asv, {})
+        obs = _sequence_v4_asv_assessment(tree, seqs, iso, taxa, asv,
+                                          pd.DataFrame())
         self.assertEqual(obs, ASVAssessment(exp))
 
         tree = bp.parse_newick("((((a,00000000),b)s__foo),(c,(11111111))s__bar);");  # noqa
@@ -224,7 +227,8 @@ class GG2MethodTests(unittest.TestCase):
                'full_length_in_enclosing_clade': ['a', ],
                'multifurcation_members': 0,
                'redbiom': {}}  # []}
-        obs = _sequence_v4_asv_assessment(tree, seqs, iso, taxa, asv, {})
+        obs = _sequence_v4_asv_assessment(tree, seqs, iso, taxa, asv,
+                                          pd.DataFrame())
         self.assertEqual(obs, ASVAssessment(exp))
 
     def test_load_tree_and_cache(self):
