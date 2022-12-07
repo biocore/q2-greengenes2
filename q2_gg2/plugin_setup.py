@@ -7,10 +7,11 @@
 # ----------------------------------------------------------------------------
 
 import importlib
-from qiime2.plugin import Plugin, Bool, Str, Int
+from qiime2.plugin import Plugin, Bool, Int, List, Str, Metadata
 from q2_types.feature_table import FeatureTable, Frequency
 from q2_types.feature_data import FeatureData, Taxonomy, Sequence
 from q2_types.tree import Phylogeny, Rooted
+from q2_types.distance_matrix import DistanceMatrix
 import q2_gg2
 from ._type import ReferenceMap, CladeAssessment, ASVAssessment
 from ._format import (ReferenceMapDirFmt, CladeAssessmentDirFmt,
@@ -266,4 +267,43 @@ plugin.methods.register_function(
                  "reference mapping"),
     citations=[]
 )
+
+plugin.visualizers.register_function(
+    function=q2_gg2.compute_effect_size,
+    inputs={
+        'distance_matrix': DistanceMatrix,
+    },
+    parameters={
+        'strict': Bool,
+        'columns': List[Str],
+        'metadata': Metadata,
+        'max_level_by_category': Int
+    },
+    input_descriptions={
+        'distance_matrix':  "The distance matrix to be split into its "
+                            "paired components"
+    },
+    parameter_descriptions={
+        "strict": 'If true, limit the paired components to only samples '
+                  'which exist in both preparations, e.g., a samples '
+                  'paired_sample also exists in the distance matrix.',
+        "columns": 'If None, all categorical columns will be used '
+                   'to compute effect sizes. Else, only specified '
+                   'columns will be used to compute effect sizes.',
+        'metadata': 'The metadata to use to inform the split. We are '
+                    'assuming the DataFrame contains a column called '
+                    'paired_sample, which describes pairing relationships, '
+                    'and a column called preparation which describes '
+                    'whether the sample is 16S or WGS.',
+        'max_level_by_category': 'Maximum number of levels permitted for '
+                                 'each categorical column present in the '
+                                 'metadata.'
+    },
+    name='Effect size calculations on 16s and WGS genes',
+    description=('Computes the effect sizes from categorical variables '
+                 'on 16S and WGS genes and produces a scatterplot of the '
+                 'effect sizes.'),
+    citations=[]
+)
+
 importlib.import_module('q2_gg2._transformer')

@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1>Effect Sizes</h1>
+<div class="row">
+  Scatterplot of effect sizes of 16S and WGS from categorical variables present in the Metadata.
+  If you want to download the effect size data, click the button below!
+</div>
+    <div class="col-lg-12">
+      <div class="text-center">
+        <img src="scatter.png"/>
+        <div>
+          <a href="table.tsv" target="_blank" rel="noopener noreferrer" class="btn btn-default">
+            Download table of effect sizes
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}
