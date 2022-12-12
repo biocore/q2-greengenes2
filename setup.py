@@ -3,11 +3,11 @@ from setuptools import setup, find_packages
 import versioneer
 
 setup(
-    name="q2-gg2",
+    name="q2-greengenes2",
     version=versioneer.get_version(),
     cmdclass=versioneer.get_cmdclass(),
     packages=find_packages(),
-    url="",
+    url="https://github.com/biocore/q2-greengenes2",
     license="BSD-3-Clause",
     description="Support methods for interaction with Greengenes2",
     entry_points={

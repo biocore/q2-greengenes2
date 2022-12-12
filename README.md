@@ -13,6 +13,7 @@ Following this name promotion, the full taxonomy is then read off the tree provi
 ```
 $ source activate qiime2.2022.2
 $ conda install -c bioconda iow
+$ pip install redbiom
 $ pip install git+https://github.com/wasade/q2-greengenes2.git
 ```
 
