@@ -887,3 +887,11 @@ def compute_effect_size(output_dir: str,
         'q2_gg2', 'compute_effect_size_assets')
     index = os.path.join(TEMPLATES, 'index.html')
     q2templates.render(index, output_dir, context={})
+
+
+def non_v4_16s(ctx, table, sequences, backbone, perc_identity=0.99, threads=1):
+    action = ctx.get_action('vsearch', 'cluster_features_closed_reference')
+    res_table, res_seqs, res_unmatched = action(sequences, table, backbone,
+                                                perc_identity=perc_identity,
+                                                threads=threads)
+    return res_table, res_seqs

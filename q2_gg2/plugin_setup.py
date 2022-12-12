@@ -7,7 +7,7 @@
 # ----------------------------------------------------------------------------
 
 import importlib
-from qiime2.plugin import Plugin, Bool, Int, List, Str, Metadata
+from qiime2.plugin import Plugin, Bool, Int, List, Str, Metadata, Float
 from q2_types.feature_table import FeatureTable, Frequency
 from q2_types.feature_data import FeatureData, Taxonomy, Sequence
 from q2_types.tree import Phylogeny, Rooted
@@ -53,6 +53,31 @@ plugin.register_semantic_type_to_format(
 plugin.register_semantic_type_to_format(
     ASVAssessment,
     artifact_format=ASVAssessmentDirFmt
+)
+
+
+plugin.pipelines.register_function(
+    function=q2_gg2.non_v4_16s,
+    inputs={'table': FeatureTable[Frequency],
+            'sequences': FeatureData[Sequence],
+            'backbone': FeatureData[Sequence]},
+    parameters={'threads': Int,
+                'perc_identity': Float},
+    outputs=[('mapped_table', FeatureTable[Frequency]),
+             ('representatives', FeatureData[Sequence])],
+    input_descriptions={
+        'table': 'A precomputed feature table (e.g., from Deblur)',
+        'sequences': 'The sequence data to characterize',
+        'backbone': 'The set of backbone sequences in Greengenes2'},
+    parameter_descriptions={
+        'threads': 'The number of threads to use on characterization',
+        'perc_identity': 'The percent identity at which to cluster'},
+    output_descriptions={
+        'mapped_table': 'The resulting feature table',
+        'representatives': 'The representative backbone tips'},
+    name='Non V4 16S sequence assessment',
+    description=("Characterize through closed reference OTU picking the "
+                 "the input feature table against Greengenes2")
 )
 
 
