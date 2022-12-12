@@ -30,7 +30,7 @@ jobs:
         source activate test-env
         conda install flake8 pytest
         conda install -c bioconda iow
-        pip install evident
+        pip install evident redbiom
         pip install -e . --no-deps
     - name: Lint with flake8
       run: |

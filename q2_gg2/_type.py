@@ -10,3 +10,5 @@ from qiime2.plugin import SemanticType
 
 
 ReferenceMap = SemanticType('ReferenceMap')
+CladeAssessment = SemanticType('CladeAssessment')
+ASVAssessment = SemanticType('ASVAssessment')

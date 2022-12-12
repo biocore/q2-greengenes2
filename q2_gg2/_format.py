@@ -8,6 +8,7 @@
 
 import qiime2.plugin.model as model
 from qiime2.plugin import ValidationError
+import json
 
 
 # adapted from q2-demux ErrorCorrectionDetailsFmt
@@ -25,7 +26,41 @@ class ReferenceMapFmt(model.TextFileFormat):
                 raise ValidationError(f"{column} is not a column")
 
 
+class CladeAssessmentFmt(model.TextFileFormat):
+    def _validate_(self, level):
+        line = open(str(self)).read()
+        try:
+            data = json.loads(line)
+        except:  # noqa
+            raise ValidationError("Data do not appear to be JSON")
+        if 'clades' not in data:
+            raise ValidationError("Data do not appear to be a CladeAssessment")
+
+
+class ASVAssessmentFmt(model.TextFileFormat):
+    def _validate_(self, level):
+        line = open(str(self)).read()
+        try:
+            data = json.loads(line)
+        except:  # noqa
+            raise ValidationError("Data do not appear to be JSON")
+        if 'asv' not in data:
+            raise ValidationError("Data do not appear to be a ASVAssessment")
+
+
 ReferenceMapDirFmt = model.SingleFileDirectoryFormat(
     'ReferenceMapDirFmt',
     'details.tsv',
     ReferenceMapFmt)
+
+
+CladeAssessmentDirFmt = model.SingleFileDirectoryFormat(
+    'CladeAssessmentDirFmt',
+    'details.json',
+    CladeAssessmentFmt)
+
+
+ASVAssessmentDirFmt = model.SingleFileDirectoryFormat(
+    'ASVAssessmentDirFmt',
+    'details.json',
+    ASVAssessmentFmt)
