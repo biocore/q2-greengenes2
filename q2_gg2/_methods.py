@@ -895,4 +895,3 @@ def non_v4_16s(ctx, table, sequences, backbone, perc_identity=0.99, threads=1):
                                                 perc_identity=perc_identity,
                                                 threads=threads)
     return res_table, res_seqs
-
