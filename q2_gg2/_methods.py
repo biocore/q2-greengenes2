@@ -907,7 +907,7 @@ def collapse_multifurcation(feature_table: biom.Table,
     # determine which regex to use with the table
     regex = None
     for r in regexs:
-        if r.match(table.ids(axis='observation')[0]):
+        if r.match(feature_table.ids(axis='observation')[0]):
             regex = r
             break
 
@@ -923,7 +923,7 @@ def collapse_multifurcation(feature_table: biom.Table,
 
     phylogeny_tips = {phylogeny.name(i) for i in range(len(phylogeny.B) - 1)
                       if phylogeny.B[i] and not phylogeny.B[i+1]}
-    overlap = phylogeny_tips & set(table.ids(axis='observation'))
+    overlap = phylogeny_tips & set(feature_table.ids(axis='observation'))
 
     # bail early if something is weird
     if not overlap:
@@ -959,7 +959,7 @@ def collapse_multifurcation(feature_table: biom.Table,
                     collapse_map[c.name] = n.name
 
     # collapse the feature table to the multifurcation
-    table = table.collapse(lambda i, m: collapse_map.get(i, i),
-                           axis='observation', norm=False)
+    table = feature_table.collapse(lambda i, m: collapse_map.get(i, i),
+                                   axis='observation', norm=False)
     table.del_metadata()
     return table, phylogeny

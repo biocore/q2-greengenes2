@@ -335,7 +335,7 @@ plugin.visualizers.register_function(
 plugin.methods.register_function(
     function=q2_gg2.collapse_multifurcation,
     inputs={'feature_table': FeatureTable[Frequency],
-            'phylogeny': ReferenceMap},
+            'phylogeny': Phylogeny[Rooted]},
     parameters={},
     outputs=[('collapsed_table', FeatureTable[Frequency]),
              ('collapsed_phylogeny', Phylogeny[Rooted])],
