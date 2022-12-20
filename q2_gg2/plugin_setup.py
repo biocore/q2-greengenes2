@@ -331,4 +331,27 @@ plugin.visualizers.register_function(
     citations=[]
 )
 
+
+plugin.methods.register_function(
+    function=q2_gg2.collapse_multifurcation,
+    inputs={'feature_table': FeatureTable[Frequency],
+            'phylogeny': ReferenceMap},
+    parameters={},
+    outputs=[('collapsed_table', FeatureTable[Frequency]),
+             ('collapsed_phylogeny', Phylogeny[Rooted])],
+    input_descriptions={
+        'feature_table': "The feature table to collapse",
+        'phylogeny': "The reference phylogeny"},
+    parameter_descriptions={},
+    output_descriptions={
+        'collapsed_table': 'The resulting collapsed feature table',
+        'collapsed_phylogeny': ('The phylogeny filtered with multifurcations '
+                                'collapsed')},
+    name='Collapse features present within multifurcations',
+    description=("Collapse features present within multifurcations. This is "
+                 "a phylogenetic feature space reduction technique. "),
+    citations=[]
+)
+
+
 importlib.import_module('q2_gg2._transformer')
