@@ -2,6 +2,15 @@ from setuptools import setup, find_packages
 
 import versioneer
 
+
+install_requires = [
+    "biom-format",
+    "iow",
+    "redbiom",
+    "scikit-bio"
+]
+
+
 setup(
     name="q2-greengenes2",
     version=versioneer.get_version(),
@@ -19,4 +28,5 @@ setup(
         'q2_gg2': []
     },
     zip_safe=False,
+    install_requires=install_requires,
 )

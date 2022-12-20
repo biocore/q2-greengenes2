@@ -24,6 +24,7 @@ from q2_gg2._methods import (_load_tree_and_cache,
                              _infer_feature_data_labels,
                              _sequence_v4_asv_assessment,
                              filter_features,
+                             collapse_multifurcation,
                              taxonomy_from_features,
                              taxonomy_from_table,
                              relabel,
@@ -44,6 +45,22 @@ class GG2MethodTests(unittest.TestCase):
                         ">X\nA\n"
                         ">Y\nA\n"
                         ">Z\nA\n")
+
+    def test_collapse_multifurcation(self):
+        table = biom.Table(np.arange(24).reshape(6, 4),
+                           ['10000000', '20000000', '30000000',
+                            '40000000', '50000000', '60000000'],
+                           list('abcd'))
+        tree = io.StringIO("((((10000000,20000000)x,G1),(30000000,G2)y),((40000000,50000000,60000000)z,(G3,G4)));")  # noqa
+        exp_tab = biom.Table(np.array([[4, 6, 8, 10],
+                                       [8, 9, 10, 11],
+                                       [48, 51, 54, 57]]),
+                             ['x', 30000000, 'z'],
+                             list('abcd'))
+        exp_tree = skbio.TreeNode.read(["(((x,G1),(30000000,G2)y),(z,(G3,G4)));"])
+        obs_tab, obs_tree = collapse_multifurcation(table, tree)
+        self.assertEqual(obs_tab, exp_tab)
+        self.assertEqual(obs_tree.compare_rfd(exp_tree), 0.)
 
     def test_infer_feature_data_labels(self):
         taxa = pd.DataFrame([['MJ007-1-barcode27-umi40bins-ubs-7010', 's__foo',

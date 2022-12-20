@@ -895,3 +895,71 @@ def non_v4_16s(ctx, table, sequences, backbone, perc_identity=0.99, threads=1):
                                                 perc_identity=perc_identity,
                                                 threads=threads)
     return res_table, res_seqs
+
+
+def collapse_multifurcation(feature_table: biom.Table,
+                            phylogeny: NewickFormat) -> (biom.Table,
+                                                         skbio.TreeNode):
+    regexs = [re.compile(r'^[ATGC]{90}'),
+              re.compile(r'^[abcdef0-9]{32}$'),
+              re.compile(r'^[0-9]{8}$')]
+
+    # determine which regex to use with the table
+    regex = None
+    for r in regexs:
+        if r.match(table.ids(axis='observation')[0]):
+            regex = r
+            break
+
+    if regex is None:
+        raise ValueError("Could not determine ASV identifiers in the table.")
+
+    # filter the tree to what's in the table
+    try:
+        phylogeny = phylogeny.read()
+    except AttributeError:
+        phylogeny = open(str(phylogeny)).read()
+    phylogeny = bp.parse_newick(phylogeny)
+
+    phylogeny_tips = {phylogeny.name(i) for i in range(len(phylogeny.B) - 1)
+                      if phylogeny.B[i] and not phylogeny.B[i+1]}
+    overlap = phylogeny_tips & set(table.ids(axis='observation'))
+
+    # bail early if something is weird
+    if not overlap:
+        raise ValueError("No table features found in the phylogeny")
+
+    # reduce the phylogeny
+    phylogeny = phylogeny.shear(overlap).collapse()
+    phylogeny = bp.to_skbio_phylogenynode(phylogeny)
+
+    # remark what appears to be an asv in the phylogeny
+    for n in phylogeny.non_tips(include_self=True):
+        n.is_asv = False
+
+    for n in phylogeny.tips():
+        if regex.match(n.name):
+            n.is_asv = True
+        else:
+            n.is_asv = False
+        n.parent.possible_multifurcation = True
+
+    # cut nodes at the multifurcation points
+    phylogeny.assign_ids()
+    collapse_map = {}
+    for n in list(phylogeny.non_tips()):
+        if hasattr(n, 'possible_multifurcation'):
+            if all([c.is_asv for c in n.children]):
+                if n.name is None:
+                    n.name = 'multifurcation-%d' % n.id
+
+                for c in list(n.children):
+                    n.remove(c)
+                    c.parent = None
+                    collapse_map[c.name] = n.name
+
+    # collapse the feature table to the multifurcation
+    table = table.collapse(lambda i, m: collapse_map.get(i, i),
+                           axis='observation', norm=False)
+    table.del_metadata()
+    return table, phylogeny
