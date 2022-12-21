@@ -931,7 +931,7 @@ def collapse_multifurcation(feature_table: biom.Table,
 
     # reduce the phylogeny
     phylogeny = phylogeny.shear(overlap).collapse()
-    phylogeny = bp.to_skbio_phylogenynode(phylogeny)
+    phylogeny = bp.to_skbio_treenode(phylogeny)
 
     # remark what appears to be an asv in the phylogeny
     for n in phylogeny.non_tips(include_self=True):
