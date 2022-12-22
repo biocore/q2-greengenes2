@@ -17,52 +17,49 @@ $ pip install q2-greengenes2
 
 # Reference database artifacts
 
-The reference database release contains the following artifacts. <version> refers to the version of the database, which follows a YYYY.MM format.  
+The reference database release contains the following artifacts. \<version\> refers to the version of the database, which follows a YYYY.MM format.  
 
 The feature IDs present in the artifacts use the WoL namespace for genomes. For ASVs, we provide reference files which use the ASV, MD5 hashes, and internal identifiers (asv, md5, id respectively).
 
 The following files are provided on the [FTP](http://ftp.microbio.me/greengenes_release/current):
 
-* <version>.backbone.full-length.fna.qza
-    All the full length 16S sequences in the backbone of the tree
+* \<version\>.backbone.full-length.fna.qza
+    * All the full length 16S sequences in the backbone of the tree
 
-* <version>.backbone.tax.qza
-    Taxonomy information for the backbone
+* \<version\>.backbone.tax.qza
+    * Taxonomy information for the backbone
 
-* <version>.backbone.v4.fna.qza
-    In silico extracted V4 sequences from the backbone based on the EMP 16S primers
+* \<version\>.backbone.v4.fna.qza
+    * In silico extracted V4 sequences from the backbone based on the EMP 16S primers
 
-* <version>.backbone.v4.nb.qza
-    Naive Bayes classifier trained on the V4 sequences from the backbone
+* \<version\>.backbone.v4.nb.qza
+    * Naive Bayes classifier trained on the V4 sequences from the backbone
 
-* <version>.phylogeny.asv.nwk
-* <version>.phylogeny.asv.nwk.qza
-* <version>.phylogeny.id.nwk
-* <version>.phylogeny.id.nwk.qza
-* <version>.phylogeny.md5.nwk
-* <version>.phylogeny.md5.nwk.qza
-    The full phylogeny. Fragments are expressed as ASVs, simple IDs, or MD5s as tips.
-    We also provided as a QIIME 2 QZA files.
+* \<version\>.phylogeny.asv.nwk
+* \<version\>.phylogeny.asv.nwk.qza
+* \<version\>.phylogeny.id.nwk
+* \<version\>.phylogeny.id.nwk.qza
+* \<version\>.phylogeny.md5.nwk
+* \<version\>.phylogeny.md5.nwk.qza
+    * The full phylogeny. Fragments are expressed as ASVs, simple IDs, or MD5s as tips. We also provided as a QIIME 2 QZA files.
 
-* <version>.seqs.fna.gz
-* <version>.seqs.fna.qza
-    All sequences used in the construction of the tree
+* \<version\>.seqs.fna.gz
+* \<version\>.seqs.fna.qza
+    * All sequences used in the construction of the tree
 
-* <version>.taxonomy.asv.nwk
-* <version>.taxonomy.asv.nwk.qza
-* <version>.taxonomy.asv.tsv.gz
-* <version>.taxonomy.asv.tsv.qza
-* <version>.taxonomy.id.nwk
-* <version>.taxonomy.id.nwk.qza
-* <version>.taxonomy.id.tsv.gz
-* <version>.taxonomy.id.tsv.qza
-* <version>.taxonomy.md5.nwk
-* <version>.taxonomy.md5.nwk.qza
-* <version>.taxonomy.md5.tsv.gz
-* <version>.taxonomy.md5.tsv.qza
-    The full taxonomic records for the database. Fragments are expressed as ASVs, simple IDs or MD5s.
-    We also provide QIIME 2 QZA files. The taxonomy is expressed both in tab delimited form as well as
-    Newick
+* \<version\>.taxonomy.asv.nwk
+* \<version\>.taxonomy.asv.nwk.qza
+* \<version\>.taxonomy.asv.tsv.gz
+* \<version\>.taxonomy.asv.tsv.qza
+* \<version\>.taxonomy.id.nwk
+* \<version\>.taxonomy.id.nwk.qza
+* \<version\>.taxonomy.id.tsv.gz
+* \<version\>.taxonomy.id.tsv.qza
+* \<version\>.taxonomy.md5.nwk
+* \<version\>.taxonomy.md5.nwk.qza
+* \<version\>.taxonomy.md5.tsv.gz
+* \<version\>.taxonomy.md5.tsv.qza
+    * The full taxonomic records for the database. Fragments are expressed as ASVs, simple IDs or MD5s. We also provide QIIME 2 QZA files. The taxonomy is expressed both in tab delimited form as well as Newick
 
 # To classify
 
