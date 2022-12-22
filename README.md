@@ -25,16 +25,16 @@ The following files are provided on the [FTP](http://ftp.microbio.me/greengenes_
 
 * \<version\>.backbone.full-length.fna.qza
     * All the full length 16S sequences in the backbone of the tree
-
+<br>
 * \<version\>.backbone.tax.qza
     * Taxonomy information for the backbone
-
+<br>
 * \<version\>.backbone.v4.fna.qza
     * In silico extracted V4 sequences from the backbone based on the EMP 16S primers
-
+<br>
 * \<version\>.backbone.v4.nb.qza
     * Naive Bayes classifier trained on the V4 sequences from the backbone
-
+<br>
 * \<version\>.phylogeny.asv.nwk
 * \<version\>.phylogeny.asv.nwk.qza
 * \<version\>.phylogeny.id.nwk
@@ -42,11 +42,11 @@ The following files are provided on the [FTP](http://ftp.microbio.me/greengenes_
 * \<version\>.phylogeny.md5.nwk
 * \<version\>.phylogeny.md5.nwk.qza
     * The full phylogeny. Fragments are expressed as ASVs, simple IDs, or MD5s as tips. We also provided as a QIIME 2 QZA files.
-
+<br>
 * \<version\>.seqs.fna.gz
 * \<version\>.seqs.fna.qza
     * All sequences used in the construction of the tree
-
+<br>
 * \<version\>.taxonomy.asv.nwk
 * \<version\>.taxonomy.asv.nwk.qza
 * \<version\>.taxonomy.asv.tsv.gz
