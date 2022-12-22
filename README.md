@@ -118,3 +118,7 @@ $ qiime greengenes2 relabel \
     --p-as-md5 \
     --o-relabeled-table <the_relabeled_table>
 ```
+
+# Citing 
+
+If you use Greengenes2, please cite [McDonald et al bioRxiv 2022](https://www.biorxiv.org/content/10.1101/2022.12.19.520774v1). 
