@@ -11,32 +11,58 @@ Following this name promotion, the full taxonomy is then read off the tree provi
 # Install
 
 ```
-$ source activate qiime2.2022.2
-$ conda install -c bioconda iow
-$ pip install redbiom
-$ pip install git+https://github.com/wasade/q2-greengenes2.git
+$ source activate qiime2.2022.8
+$ pip install q2-greengenes2
 ```
 
 # Reference database artifacts
 
 The reference database release contains the following artifacts. <version> refers to the version of the database, which follows a YYYY.MM format.  
 
-Unless otherwise indicated, the feature IDs present in the artifacts use the WoL namespace for genomes, and md5 hashes for all else. A label mapping artifact is provided should transformations to the original ID, hash or raw sequence be necessary.
+The feature IDs present in the artifacts use the WoL namespace for genomes. For ASVs, we provide reference files which use the ASV, MD5 hashes, and internal identifiers (asv, md5, id respectively).
 
-* `gg2-<version>-taxonomy.newick.qza`
-	A Newick version of the taxonomy where internal nodes are taxa, and tips are feature IDs
-* `gg2-<version>-taxonomy.tsv.qza`
-	The taxonomy data in the classic tab delimited format
-* `gg2-<version>-phylogeny.ids.newick.qza`
-	A phylogeny representing all of the Greengenes2 features with IDs as tips
-* `gg2-<version>-phylogeny.md5.newick.qza`
-	A phylogeny representing all of the Greengenes2 features with ASVs as MD5 for tips
-* `gg2-<version>-phylogeny.asv.newick.qza`
-	A phylogeny representing all of the Greengenes2 features with ASVs as their sequences for tips
-* `gg2-<version>-label_map.qza`
-	A tab delimited map of sequence ID, md5 hash of a sequence, and the sequence itself
-* `gg2-<version>-sequences.fna.gz`
-	A FASTA file of the records used in Greengenes2
+The following files are provided on the [FTP](http://ftp.microbio.me/greengenes_release/current):
+
+* <version>.backbone.full-length.fna.qza
+    All the full length 16S sequences in the backbone of the tree
+
+* <version>.backbone.tax.qza
+    Taxonomy information for the backbone
+
+* <version>.backbone.v4.fna.qza
+    In silico extracted V4 sequences from the backbone based on the EMP 16S primers
+
+* <version>.backbone.v4.nb.qza
+    Naive Bayes classifier trained on the V4 sequences from the backbone
+
+* <version>.phylogeny.asv.nwk
+* <version>.phylogeny.asv.nwk.qza
+* <version>.phylogeny.id.nwk
+* <version>.phylogeny.id.nwk.qza
+* <version>.phylogeny.md5.nwk
+* <version>.phylogeny.md5.nwk.qza
+    The full phylogeny. Fragments are expressed as ASVs, simple IDs, or MD5s as tips.
+    We also provided as a QIIME 2 QZA files.
+
+* <version>.seqs.fna.gz
+* <version>.seqs.fna.qza
+    All sequences used in the construction of the tree
+
+* <version>.taxonomy.asv.nwk
+* <version>.taxonomy.asv.nwk.qza
+* <version>.taxonomy.asv.tsv.gz
+* <version>.taxonomy.asv.tsv.qza
+* <version>.taxonomy.id.nwk
+* <version>.taxonomy.id.nwk.qza
+* <version>.taxonomy.id.tsv.gz
+* <version>.taxonomy.id.tsv.qza
+* <version>.taxonomy.md5.nwk
+* <version>.taxonomy.md5.nwk.qza
+* <version>.taxonomy.md5.tsv.gz
+* <version>.taxonomy.md5.tsv.qza
+    The full taxonomic records for the database. Fragments are expressed as ASVs, simple IDs or MD5s.
+    We also provide QIIME 2 QZA files. The taxonomy is expressed both in tab delimited form as well as
+    Newick
 
 # To classify
 
@@ -92,3 +118,7 @@ $ qiime greengenes2 relabel \
     --p-as-md5 \
     --o-relabeled-table <the_relabeled_table>
 ```
+
+# Citing 
+
+If you use Greengenes2, please cite [McDonald et al bioRxiv 2022](https://www.biorxiv.org/content/10.1101/2022.12.19.520774v1). 
