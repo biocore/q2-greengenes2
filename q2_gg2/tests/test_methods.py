@@ -57,7 +57,7 @@ class GG2MethodTests(unittest.TestCase):
                                        [48, 51, 54, 57]]),
                              ['x', 30000000, 'z'],
                              list('abcd'))
-        exp_tree = skbio.TreeNode.read(["(((x,G1),(30000000,G2)y),(z,(G3,G4)));"])
+        exp_tree = skbio.TreeNode.read(["(((x,G1),(30000000,G2)y),(z,(G3,G4)));"])  # noqa
         obs_tab, obs_tree = collapse_multifurcation(table, tree)
         self.assertEqual(obs_tab, exp_tab)
         self.assertEqual(obs_tree.compare_rfd(exp_tree), 0.)
