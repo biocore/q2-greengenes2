@@ -548,6 +548,13 @@ def _load_tree_and_cache(data, features):
         if node.parent.is_root():
             node.ancestor_cache = []
         else:
+            if node.parent.name is None:
+                raise ValueError("The provided reference seems malformed. "
+                                 "This error would happen if the "
+                                 "<version>.phylogeny.*.nwk.qza file was "
+                                 "provided. Please try rerunning using the "
+                                 "<version>.taxonomy.*.nwk.qza file as the "
+                                 "reference")
             parent_cache = node.parent.ancestor_cache
             node.ancestor_cache = [node.parent.name] + parent_cache
     return tree
