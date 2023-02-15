@@ -214,7 +214,9 @@ plugin.methods.register_function(
     parameters={},
     outputs=[('classification', FeatureData[Taxonomy])],
     input_descriptions={
-        'reference_taxonomy': 'The reference taxonomy to derive from',
+        'reference_taxonomy': ('The reference taxonomy to derive from. Note '
+                               'that this input corresponds to the .nwk '
+                               'reference artifact'),
         'table': 'The feature table to classify'
     },
     parameter_descriptions={},
