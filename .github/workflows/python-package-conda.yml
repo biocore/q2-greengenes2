@@ -25,10 +25,19 @@ jobs:
       run: |
         # $CONDA is an environment variable pointing to the root of the miniconda directory
         echo $CONDA/bin >> $GITHUB_PATH
-    - name: Install dependencies
+    - name: Install QIIME 2 ${{ matrix.os }}
+      if: matrix.os == 'macos-latest'
+      shell: bash -l {0}
+      run: |
+        wget -q https://raw.githubusercontent.com/qiime2/environment-files/master/latest/staging/qiime2-latest-py38-osx-conda.yml
+        conda env create -q -n test-env --file qiime2-latest-py38-osx-conda.yml
+    - name: Install QIIME 2 ${{ matrix.os }}
+      if: matrix.os == 'ubuntu-latest'
+      shell: bash -l {0}
       run: |
         wget -q https://raw.githubusercontent.com/qiime2/environment-files/master/latest/staging/qiime2-latest-py38-linux-conda.yml
         conda env create -q -n test-env --file qiime2-latest-py38-linux-conda.yml
+    - name: Install q2-greengenes2
         source activate test-env
         conda install flake8 pytest
         pip install -e . 
