@@ -5,9 +5,11 @@ on: [push]
 
 jobs:
   build-linux:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       max-parallel: 5
+      matrix:
+        os: ["ubuntu-latest", "macos-latest"]
 
     steps:
     - uses: actions/checkout@v2
@@ -29,9 +31,7 @@ jobs:
         conda env create -q -n test-env --file qiime2-latest-py38-linux-conda.yml
         source activate test-env
         conda install flake8 pytest
-        conda install -c bioconda iow
-        pip install evident redbiom
-        pip install -e . --no-deps
+        pip install -e . 
     - name: Lint with flake8
       run: |
         source activate test-env
