@@ -1,5 +1,9 @@
 # Greengenes2 changelog
 
+## Version 2024.01
+
+* Removed methods of bulk characterization which are resource, not user, oriented
+
 ## Version 2022.12
 
 * Added a method for collapsing by multifurcation in [#5](https://github.com/biocore/q2-greengenes2/pull/5)
