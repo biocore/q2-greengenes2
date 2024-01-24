@@ -82,6 +82,56 @@ plugin.pipelines.register_function(
 
 
 plugin.methods.register_function(
+    function=q2_gg2.clade_v4_asv_assessment,
+    inputs={'phylogeny': Phylogeny[Rooted],
+            'taxa': FeatureData[Taxonomy],
+            'full_length_v4': FeatureData[Sequence],
+            'sequences': FeatureData[Sequence]},
+    parameters={'clade': Str},
+    outputs=[('characterization', CladeAssessment)],
+    input_descriptions={
+        'phylogeny': 'The ID annotated phylogeny',
+        'taxa': 'The taxa indexed by ID',
+        'full_length_v4': 'The extracted V4 sequences from the backbone',
+        'sequences': 'The full set of GG2 sequences'},
+    parameter_descriptions={
+        'clade': 'The clade to search for',
+        },
+    output_descriptions={
+        'characterization': "The clade characterization detail"},
+    name='Clade ASV level assessment',
+    description=("Test whether the clade is uniquely represented by ASVs "
+                 "and other summary information about the clade"),
+    citations=[]
+)
+
+
+plugin.methods.register_function(
+    function=q2_gg2.sequence_v4_asv_assessment,
+    inputs={'phylogeny': Phylogeny[Rooted],
+            'taxa': FeatureData[Taxonomy],
+            'full_length_v4': FeatureData[Sequence],
+            'sequences': FeatureData[Sequence]},
+    parameters={'asv': Str},
+    outputs=[('characterization', ASVAssessment)],
+    input_descriptions={
+        'phylogeny': 'The ID annotated phylogeny',
+        'taxa': 'The taxa indexed by ID',
+        'full_length_v4': 'The extracted V4 sequences from the backbone',
+        'sequences': 'The full set of GG2 sequences'},
+    parameter_descriptions={
+        'asv': 'The ASV sequence to summarize',
+        },
+    output_descriptions={
+        'characterization': "The ASV characterization detail"},
+    name='ASV assessment',
+    description=("Check what full length records the ASV associates with "
+                 "and members within its placement multifurcation"),
+    citations=[]
+)
+
+
+plugin.methods.register_function(
     function=q2_gg2.taxonomy_from_table,
     inputs={'reference_taxonomy': Phylogeny[Rooted],
             'table': FeatureTable[Frequency]},
