@@ -21,7 +21,7 @@ from ._format import (ReferenceMapDirFmt, CladeAssessmentDirFmt,
 plugin = Plugin(
     name='greengenes2',
     version=q2_gg2.__version__,
-    website='https://github.com/biocore/q2-gg2',
+    website='https://github.com/biocore/q2-greengenes2',
     package='q2_gg2',
     description="Methods for interaction with Greengenes2",
     short_description="Methods for interaction with Greengenes2"
