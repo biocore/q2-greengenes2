@@ -21,7 +21,8 @@ setup(
     description="Support methods for interaction with Greengenes2",
     entry_points={
         "qiime2.plugins":
-        ["q2-gg2=q2_gg2.plugin_setup:plugin"]
+        ["q2-gg2=q2_gg2.plugin_setup:plugin"],
+        "console_scripts": "greengenes2=q2_gg2._cli:cli"
     },
     package_data={
         'q2_gg2.tests': [],
