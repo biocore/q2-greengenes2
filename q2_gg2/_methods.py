@@ -30,57 +30,60 @@ import redbiom.util as rbu
 
 
 CONTEXTS = {
-    90: 'Deblur_2021.09-Illumina-16S-V4-90nt-dd6875',
-    100: 'Deblur_2021.09-Illumina-16S-V4-100nt-50b3a2',
-    125: 'Deblur_2021.09-Illumina-16S-V4-125nt-92f954',
-    150: 'Deblur_2021.09-Illumina-16S-V4-150nt-ac8c0b',
-    200: 'Deblur_2021.09-Illumina-16S-V4-200nt-0b8b48',
-    250: 'Deblur_2021.09-Illumina-16S-V4-250nt-8b2bff'
+    90: "Deblur_2021.09-Illumina-16S-V4-90nt-dd6875",
+    100: "Deblur_2021.09-Illumina-16S-V4-100nt-50b3a2",
+    125: "Deblur_2021.09-Illumina-16S-V4-125nt-92f954",
+    150: "Deblur_2021.09-Illumina-16S-V4-150nt-ac8c0b",
+    200: "Deblur_2021.09-Illumina-16S-V4-200nt-0b8b48",
+    250: "Deblur_2021.09-Illumina-16S-V4-250nt-8b2bff",
 }
 
 
-DF_COLUMNS = ['Feature ID', 'Taxon', 'Confidence']
-PAD = [f'{r}__' for r in 'dpcofgs']
+DF_COLUMNS = ["Feature ID", "Taxon", "Confidence"]
+PAD = [f"{r}__" for r in "dpcofgs"]
 
 
 def _infer_feature_data_labels(df):
-    gtdb = re.compile(r'G\d{9}')
-    operon = re.compile(r'M.\d{3}-\d-barcode\d+-umi\d+bins-ubs-\d')
-    asv = re.compile(r'\d{8}')
-    silva = re.compile(r'[A-Z][A-Z0-9]?\d+\.\d+\.\d+')
+    gtdb = re.compile(r"G\d{9}")
+    operon = re.compile(r"M.\d{3}-\d-barcode\d+-umi\d+bins-ubs-\d")
+    asv = re.compile(r"\d{8}")
+    silva = re.compile(r"[A-Z][A-Z0-9]?\d+\.\d+\.\d+")
     # LTP -> all else
 
     def labeler(id_):
         if gtdb.match(id_):
-            return 'GTDB'
+            return "GTDB"
         elif operon.match(id_):
-            return 'Operon'
+            return "Operon"
         elif asv.match(id_):
-            return 'ASV'
+            return "ASV"
         elif silva.match(id_):
-            return 'SILVA'
+            return "SILVA"
         else:
-            return 'LTP'
+            return "LTP"
 
-    return pd.Series(df.index.map(labeler), index=df.index, name='Type')
+    return pd.Series(df.index.map(labeler), index=df.index, name="Type")
 
 
 class CladeAssessment(dict):
-    SORTABLE = ('observed_v4_isolate', 'observed_v4_fragment',
-                'in_clade_matching_v4_fragment_and_full_length',
-                'out_clade_matching_v4_fragment_and_full_length',
-                'unobserved_v4_isolate_fragments')
-    UNSORTABLE = ('out_clade_lineages', 'redbiom')
+    SORTABLE = (
+        "observed_v4_isolate",
+        "observed_v4_fragment",
+        "in_clade_matching_v4_fragment_and_full_length",
+        "out_clade_matching_v4_fragment_and_full_length",
+        "unobserved_v4_isolate_fragments",
+    )
+    UNSORTABLE = ("out_clade_lineages", "redbiom")
 
     def __init__(self, *args, **kwargs):
-        self['type'] = 'species-clade'
+        self["type"] = "species-clade"
         super().__init__(*args, **kwargs)
 
     def __eq__(self, other):
-        if len(self['clades']) != len(other['clades']):
+        if len(self["clades"]) != len(other["clades"]):
             return False
 
-        for s_clade, o_clade in zip(self['clades'], other['clades']):
+        for s_clade, o_clade in zip(self["clades"], other["clades"]):
             for k in self.SORTABLE:
                 if sorted(s_clade[k]) != sorted(o_clade[k]):
                     return False
@@ -93,12 +96,11 @@ class CladeAssessment(dict):
 
 
 class ASVAssessment(dict):
-    SORTABLE = ('observed_in_full_length', )
-    UNSORTABLE = ('asv', 'id', 'lineage', 'md5', 'multifurcation_members',
-                  'redbiom')
+    SORTABLE = ("observed_in_full_length",)
+    UNSORTABLE = ("asv", "id", "lineage", "md5", "multifurcation_members", "redbiom")
 
     def __init__(self, *args, **kwargs):
-        self['type'] = 'asv-detail'
+        self["type"] = "asv-detail"
         super().__init__(*args, **kwargs)
 
     def __eq__(self, other):
@@ -111,8 +113,9 @@ class ASVAssessment(dict):
         return True
 
 
-def clade_lookup(taxonomy_as_tree: NewickFormat,
-                 version: str, output_filename: str) -> CladeAssessment:
+def clade_lookup(
+    taxonomy_as_tree: NewickFormat, version: str, output_filename: str
+) -> CladeAssessment:
     tree = str(taxonomy_as_tree)
     tree = bp.to_skbio_treenode(bp.parse_newick(open(str(tree)).read()))
 
@@ -123,12 +126,15 @@ def clade_lookup(taxonomy_as_tree: NewickFormat,
             continue
 
         if name not in lookup_data:
-            lookup_data[name] = {'type': 'lookup', 'parent': set(),
-                                 'children': [], 'name': name}
+            lookup_data[name] = {
+                "type": "lookup",
+                "parent": set(),
+                "children": [],
+                "name": name,
+            }
 
         parent = n.parent.name
-        children = [c.name for c in n.children
-                    if not c.is_tip() and len(c.name) > 3]
+        children = [c.name for c in n.children if not c.is_tip() and len(c.name) > 3]
 
         # There is a thin edge case on tax2tree decoration where names
         # coming through secondary taxonomy *might* get multiple parents.
@@ -136,25 +142,27 @@ def clade_lookup(taxonomy_as_tree: NewickFormat,
         # is not constructing assured unique names when a name is polyphyletic.
 
         if parent is not None:
-            lookup_data[name]['parent'].add(parent)
+            lookup_data[name]["parent"].add(parent)
 
-        lookup_data[name]['children'].extend(children)
+        lookup_data[name]["children"].extend(children)
 
     for k, v in lookup_data.items():
-        v['parent'] = list(v['parent'])
+        v["parent"] = list(v["parent"])
 
-    with open(output_filename, 'w') as fp:
+    with open(output_filename, "w") as fp:
         for k, v in sorted(lookup_data.items()):
-            fp.write('\t'.join((k, version, json.dumps(v))))
-            fp.write('\n')
+            fp.write("\t".join((k, version, json.dumps(v))))
+            fp.write("\n")
 
-    fake = {'observed_v4_isolate': '',
-            'observed_v4_fragment': '',
-            'in_clade_matching_v4_fragment_and_full_length': '',
-            'out_clade_matching_v4_fragment_and_full_length': '',
-            'unobserved_v4_isolate_fragments': '',
-            'out_clade_lineages': '',
-            'clades': []}
+    fake = {
+        "observed_v4_isolate": "",
+        "observed_v4_fragment": "",
+        "in_clade_matching_v4_fragment_and_full_length": "",
+        "out_clade_matching_v4_fragment_and_full_length": "",
+        "unobserved_v4_isolate_fragments": "",
+        "out_clade_lineages": "",
+        "clades": [],
+    }
     return CladeAssessment(fake)
 
 
@@ -167,8 +175,7 @@ def _fast_parse_fasta(path):
 
 
 def _stage_redbiom_metadata():
-    restrict_to = ["empo_1", "empo_2", "empo_3", "sample_type", "latitude",
-                   "longitude"]
+    restrict_to = ["empo_1", "empo_2", "empo_3", "sample_type", "latitude", "longitude"]
     seen = set()
     md = []
     for v in CONTEXTS.values():
@@ -180,8 +187,8 @@ def _stage_redbiom_metadata():
         seen.update(samples)
 
     md = pd.concat(md)
-    md['latitude'] = pd.to_numeric(md['latitude'], errors='coerce')
-    md['longitude'] = pd.to_numeric(md['longitude'], errors='coerce')
+    md["latitude"] = pd.to_numeric(md["latitude"], errors="coerce")
+    md["longitude"] = pd.to_numeric(md["longitude"], errors="coerce")
 
     return md
 
@@ -205,8 +212,15 @@ def _sequence_v4_redbiom_summary(asvs, rbmd):
     samples = set()
     for asv_len, asv_batch in by_length.items():
         ctx = CONTEXTS[asv_len]
-        cur_samples = rbu.ids_from(asv_batch, exact=False, axis='feature',
-                                   contexts=[ctx, ], min_count=1)
+        cur_samples = rbu.ids_from(
+            asv_batch,
+            exact=False,
+            axis="feature",
+            contexts=[
+                ctx,
+            ],
+            min_count=1,
+        )
         _, _, _, sample_batch = rbu.partition_samples_by_tags(cur_samples)
         samples.update(sample_batch)
 
@@ -217,7 +231,7 @@ def _sequence_v4_redbiom_summary(asvs, rbmd):
     md_subset = rbmd.loc[samples]
     summary = {}
     for c in md_subset.columns:
-        if c in ('latitude', 'longitude', '#SampleID'):
+        if c in ("latitude", "longitude", "#SampleID"):
             continue
         summary[c] = md_subset[c].value_counts().to_dict()
 
@@ -225,61 +239,68 @@ def _sequence_v4_redbiom_summary(asvs, rbmd):
     latlongcount = []
     for (lat, long_), count in latlong.items():
         latlongcount.append([lat, long_, count])
-    summary['latitude_longitude'] = latlongcount
+    summary["latitude_longitude"] = latlongcount
 
-    return {'context': CONTEXTS[min(by_length.keys())],
-            'summary': summary}
+    return {"context": CONTEXTS[min(by_length.keys())], "summary": summary}
 
 
-def bulk_sequence_v4_asv_assessment(phylogeny: NewickFormat, taxa: pd.DataFrame,  # noqa
-                                    full_length_v4: DNAFASTAFormat,
-                                    sequences: DNAFASTAFormat,
-                                    version: str,
-                                    group: int, output_filename: str) -> ASVAssessment:  # noqa
-    out = open(output_filename + '.%d' % group, 'w')
+def bulk_sequence_v4_asv_assessment(
+    phylogeny: NewickFormat,
+    taxa: pd.DataFrame,  # noqa
+    full_length_v4: DNAFASTAFormat,
+    sequences: DNAFASTAFormat,
+    version: str,
+    group: int,
+    output_filename: str,
+) -> ASVAssessment:  # noqa
+    out = open(output_filename + ".%d" % group, "w")
 
     # cache the things
     tree = bp.parse_newick(open(str(phylogeny)).read())
     full_length_v4 = {i: s for i, s in _fast_parse_fasta(str(full_length_v4))}
-    sequences = {i: s for i, s in _fast_parse_fasta(str(sequences))
-                 if i not in full_length_v4}
-    taxa['Type'] = _infer_feature_data_labels(taxa)
+    sequences = {
+        i: s for i, s in _fast_parse_fasta(str(sequences)) if i not in full_length_v4
+    }
+    taxa["Type"] = _infer_feature_data_labels(taxa)
     rbmd = _stage_redbiom_metadata()
 
     detail = {}
-    for asv_id in taxa[taxa['Type'] == 'ASV'].index:
-        asv_hash = hashlib.md5(asv_id.encode('ascii')).hexdigest()
-        asv_group_int = int('0x%s' % asv_hash[:2], 0)
+    for asv_id in taxa[taxa["Type"] == "ASV"].index:
+        asv_hash = hashlib.md5(asv_id.encode("ascii")).hexdigest()
+        asv_group_int = int("0x%s" % asv_hash[:2], 0)
         if asv_group_int != group:
             continue
 
         asv = sequences[asv_id]
-        detail = _sequence_v4_asv_assessment(tree, sequences, full_length_v4,
-                                             taxa, asv, rbmd)
+        detail = _sequence_v4_asv_assessment(
+            tree, sequences, full_length_v4, taxa, asv, rbmd
+        )
 
-        asv_md5 = detail['md5']
-        out.write('%s\t%s\t%s\n' % (asv_md5, version, json.dumps(detail)))
+        asv_md5 = detail["md5"]
+        out.write("%s\t%s\t%s\n" % (asv_md5, version, json.dumps(detail)))
     out.close()
     return ASVAssessment(detail)
 
 
-def sequence_v4_asv_assessment(phylogeny: NewickFormat, taxa: pd.DataFrame,
-                               full_length_v4: DNAFASTAFormat,
-                               sequences: DNAFASTAFormat,
-                               asv: str) -> ASVAssessment:
+def sequence_v4_asv_assessment(
+    phylogeny: NewickFormat,
+    taxa: pd.DataFrame,
+    full_length_v4: DNAFASTAFormat,
+    sequences: DNAFASTAFormat,
+    asv: str,
+) -> ASVAssessment:
     # cache the things
     tree = bp.parse_newick(open(str(phylogeny)).read())
     full_length_v4 = {i: s for i, s in _fast_parse_fasta(str(full_length_v4))}
-    sequences = {i: s for i, s in _fast_parse_fasta(str(sequences))
-                 if i not in full_length_v4}
-    taxa['Type'] = _infer_feature_data_labels(taxa)
+    sequences = {
+        i: s for i, s in _fast_parse_fasta(str(sequences)) if i not in full_length_v4
+    }
+    taxa["Type"] = _infer_feature_data_labels(taxa)
     rbmd = _stage_redbiom_metadata()
-    return _sequence_v4_asv_assessment(tree, sequences, full_length_v4, taxa,
-                                       asv, rbmd)
+    return _sequence_v4_asv_assessment(tree, sequences, full_length_v4, taxa, asv, rbmd)
 
 
-def _sequence_v4_asv_assessment(tree, sequences, full_length_v4, taxa, asv,
-                                rbmd):
+def _sequence_v4_asv_assessment(tree, sequences, full_length_v4, taxa, asv, rbmd):
     # assumes tree is by ID
     # assumes taxonomy is by ID
     # assumes sequence data are by ID
@@ -288,7 +309,7 @@ def _sequence_v4_asv_assessment(tree, sequences, full_length_v4, taxa, asv,
     for k, v in sequences.items():
         if v == asv:
             asv_id = k
-            asv_hash = hashlib.md5(asv.encode('ascii')).hexdigest()
+            asv_hash = hashlib.md5(asv.encode("ascii")).hexdigest()
             break
 
     if asv_id is None:
@@ -305,7 +326,7 @@ def _sequence_v4_asv_assessment(tree, sequences, full_length_v4, taxa, asv,
     if node_idx is None:
         raise ValueError("ASV ID %s not found in phylogeny" % asv_id)
 
-    lineage = taxa.loc[asv_id]['Taxon']
+    lineage = taxa.loc[asv_id]["Taxon"]
 
     # we expect the structure to be:
     # (full_length,(asv1,asv2,asv3,...))
@@ -324,85 +345,104 @@ def _sequence_v4_asv_assessment(tree, sequences, full_length_v4, taxa, asv,
         if tree.B[idx] and not tree.B[idx + 1]:
             name = tree.name(idx)
             if name != asv_id:
-                if taxa.loc[name]['Type'] == 'ASV':
+                if taxa.loc[name]["Type"] == "ASV":
                     multifurcation_members.append(name)
 
     # determine what full length if any this ASV exists in
     observed_in = []
     for id_, seq in full_length_v4.items():
         if asv in seq:
-            seq_lineage = taxa.loc[id_, 'Taxon']
+            seq_lineage = taxa.loc[id_, "Taxon"]
             observed_in.append([id_, seq_lineage])
 
-    rbdetail = _sequence_v4_redbiom_summary([asv, ], rbmd)
+    rbdetail = _sequence_v4_redbiom_summary(
+        [
+            asv,
+        ],
+        rbmd,
+    )
 
-    return ASVAssessment({'asv': asv,
-                          'id': asv_id,
-                          'lineage': lineage,
-                          'md5': asv_hash,
-                          'observed_in_full_length': list(observed_in),
-                          'multifurcation_members': len(multifurcation_members),  # noqa
-                          'redbiom': rbdetail})  # noqa
+    return ASVAssessment(
+        {
+            "asv": asv,
+            "id": asv_id,
+            "lineage": lineage,
+            "md5": asv_hash,
+            "observed_in_full_length": list(observed_in),
+            "multifurcation_members": len(multifurcation_members),  # noqa
+            "redbiom": rbdetail,
+        }
+    )  # noqa
 
 
-def bulk_clade_v4_asv_assessment(phylogeny: NewickFormat, taxa: pd.DataFrame,
-                                 full_length_v4: DNAFASTAFormat,
-                                 sequences: DNAFASTAFormat,
-                                 version: str,
-                                 group: int, output_filename: str) -> CladeAssessment:  # noqa
-    out = open(output_filename + '.%d' % group, 'w')
+def bulk_clade_v4_asv_assessment(
+    phylogeny: NewickFormat,
+    taxa: pd.DataFrame,
+    full_length_v4: DNAFASTAFormat,
+    sequences: DNAFASTAFormat,
+    version: str,
+    group: int,
+    output_filename: str,
+) -> CladeAssessment:  # noqa
+    out = open(output_filename + ".%d" % group, "w")
 
     # cache the things
     tree = bp.parse_newick(open(str(phylogeny)).read())
     full_length_v4 = {i: s for i, s in _fast_parse_fasta(str(full_length_v4))}
-    sequences = {i: s for i, s in _fast_parse_fasta(str(sequences))
-                 if i not in full_length_v4}
-    taxa['Type'] = _infer_feature_data_labels(taxa)
+    sequences = {
+        i: s for i, s in _fast_parse_fasta(str(sequences)) if i not in full_length_v4
+    }
+    taxa["Type"] = _infer_feature_data_labels(taxa)
 
     rbmd = _stage_redbiom_metadata()
 
     detail = {}
 
     # for each species, if the species is in our processing group, summarize
-    taxa['Species'] = taxa['Taxon'].apply(lambda x: x.split('; ')[-1])
-    for species in taxa['Species'].unique():
-        if species == 's__':
+    taxa["Species"] = taxa["Taxon"].apply(lambda x: x.split("; ")[-1])
+    for species in taxa["Species"].unique():
+        if species == "s__":
             continue
-        species_group = hashlib.md5(species.encode('ascii')).hexdigest()
+        species_group = hashlib.md5(species.encode("ascii")).hexdigest()
 
         # range is 0 -> 255
-        species_group_int = int('0x%s' % species_group[:2], 0)
+        species_group_int = int("0x%s" % species_group[:2], 0)
         if species_group_int != group:
             continue
 
-        detail = _clade_v4_asv_assessment(tree, taxa, full_length_v4,
-                                          sequences, species, rbmd)
+        detail = _clade_v4_asv_assessment(
+            tree, taxa, full_length_v4, sequences, species, rbmd
+        )
 
-        out.write('%s\t%s\t%s\n' % (species, version, json.dumps(detail)))
+        out.write("%s\t%s\t%s\n" % (species, version, json.dumps(detail)))
 
     out.close()
 
     return CladeAssessment(detail)
 
 
-def clade_v4_asv_assessment(phylogeny: NewickFormat, taxa: pd.DataFrame,
-                            full_length_v4: DNAFASTAFormat,
-                            sequences: DNAFASTAFormat,
-                            clade: str) -> CladeAssessment:
+def clade_v4_asv_assessment(
+    phylogeny: NewickFormat,
+    taxa: pd.DataFrame,
+    full_length_v4: DNAFASTAFormat,
+    sequences: DNAFASTAFormat,
+    clade: str,
+) -> CladeAssessment:
     tree = bp.parse_newick(open(str(phylogeny)).read())
     full_length_v4 = {i: s for i, s in _fast_parse_fasta(str(full_length_v4))}
-    sequences = {i: s for i, s in _fast_parse_fasta(str(sequences))
-                 if i not in full_length_v4}
-    taxa['Type'] = _infer_feature_data_labels(taxa)
+    sequences = {
+        i: s for i, s in _fast_parse_fasta(str(sequences)) if i not in full_length_v4
+    }
+    taxa["Type"] = _infer_feature_data_labels(taxa)
 
     rbmd = _stage_redbiom_metadata()
-    return CladeAssessment(_clade_v4_asv_assessment(tree, taxa, full_length_v4,
-                                                    sequences, clade, rbmd))
+    return CladeAssessment(
+        _clade_v4_asv_assessment(tree, taxa, full_length_v4, sequences, clade, rbmd)
+    )
 
 
-def _clade_v4_asv_assessment(tree, taxa, full_length_v4, sequences, clade,
-                             rbmd):
-    taxa['Species'] = taxa['Taxon'].apply(lambda x: x.split('; ')[-1])
+def _clade_v4_asv_assessment(tree, taxa, full_length_v4, sequences, clade, rbmd):
+    taxa["Species"] = taxa["Taxon"].apply(lambda x: x.split("; ")[-1])
     species_to_lineage = {r.Species: r.Taxon for r in taxa.itertuples()}
 
     # search for the clade in the tree
@@ -416,57 +456,57 @@ def _clade_v4_asv_assessment(tree, taxa, full_length_v4, sequences, clade,
             if name and clade in name:
                 clade_start = idx
                 clade_end = tree.close(idx)
-                detail = _clade_v4_assessment_tree_coordinates(tree, taxa,
-                                                               full_length_v4,
-                                                               sequences,
-                                                               clade_start,
-                                                               clade_end,
-                                                               rbmd)
-                detail['name'] = clade
-                detail['lineage'] = species_to_lineage[clade]
+                detail = _clade_v4_assessment_tree_coordinates(
+                    tree, taxa, full_length_v4, sequences, clade_start, clade_end, rbmd
+                )
+                detail["name"] = clade
+                detail["lineage"] = species_to_lineage[clade]
                 details.append(detail)
 
     if clade_start is None:
         return ValueError("%s not found in tree" % clade)
 
-    return CladeAssessment({'clades': details})
+    return CladeAssessment({"clades": details})
 
 
-def _clade_v4_assessment_tree_coordinates(tree, taxa, full_length_v4,
-                                          sequences, clade_start, clade_end,
-                                          rbmd):
+def _clade_v4_assessment_tree_coordinates(
+    tree, taxa, full_length_v4, sequences, clade_start, clade_end, rbmd
+):
     # obtain the set of identifiers at the tips of the clade
-    clade_identifiers = {tree.name(idx)
-                         for idx, v in enumerate(tree.B[clade_start:clade_end],
-                                                 clade_start)
-                         if v and not tree.B[idx + 1]}  # 10 indicates tip
+    clade_identifiers = {
+        tree.name(idx)
+        for idx, v in enumerate(tree.B[clade_start:clade_end], clade_start)
+        if v and not tree.B[idx + 1]
+    }  # 10 indicates tip
 
     # filter the taxonomic information to any full_length in the clade
     clade_taxa = taxa.loc[clade_identifiers]
-    isolates = clade_taxa[clade_taxa['Type'].isin(['GTDB', 'LTP'])]
-    asvs = clade_taxa[clade_taxa['Type'].isin(['ASV'])]
+    isolates = clade_taxa[clade_taxa["Type"].isin(["GTDB", "LTP"])]
+    asvs = clade_taxa[clade_taxa["Type"].isin(["ASV"])]
 
     # filter to out-of-clade full length records
-    outclade_taxa = taxa[(~taxa.index.isin(clade_identifiers)) &
-                         (taxa['Type'].isin(['GTDB', 'LTP', 'Operon']))]
+    outclade_taxa = taxa[
+        (~taxa.index.isin(clade_identifiers))
+        & (taxa["Type"].isin(["GTDB", "LTP", "Operon"]))
+    ]
 
     if not len(isolates):
         # this should never happen as taxonomic information comes from the
         # isolates. Note it is permissible for there to not be any ASVs
         raise ValueError("No isolates observed within clade")
 
-    clade_features = {full_length_v4[i] for i in clade_taxa.index
-                      if i in full_length_v4}
-    clade_features |= {sequences[i] for i in clade_taxa.index
-                       if i in sequences}
-    observed_v4_isolates = [[k, full_length_v4[k]] for k in isolates.index
-                            if k in full_length_v4]
+    clade_features = {
+        full_length_v4[i] for i in clade_taxa.index if i in full_length_v4
+    }
+    clade_features |= {sequences[i] for i in clade_taxa.index if i in sequences}
+    observed_v4_isolates = [
+        [k, full_length_v4[k]] for k in isolates.index if k in full_length_v4
+    ]
     observed_v4_fragments = [[k, sequences[k]] for k in asvs.index]
     observed_v4_fragments_lookup = {s for _, s in observed_v4_fragments}
 
     asv_rb_detail = _sequence_v4_redbiom_summary(
-        list(observed_v4_fragments_lookup),
-        rbmd
+        list(observed_v4_fragments_lookup), rbmd
     )
 
     # test each fragment for exact match within clade isolates
@@ -518,7 +558,7 @@ def _clade_v4_assessment_tree_coordinates(tree, taxa, full_length_v4,
 
         if read not in inverse_reads:
             inverse_reads[read] = set()
-        lineage = outclade_taxa.loc[id_, 'Taxon']
+        lineage = outclade_taxa.loc[id_, "Taxon"]
         inverse_reads[read].add(lineage)
 
     # pull out the observed lineages for a given fragment
@@ -527,13 +567,15 @@ def _clade_v4_assessment_tree_coordinates(tree, taxa, full_length_v4,
         lineages = list(inverse_reads.get(fragment, []))
         out_clade_lineages[fragment] = lineages
 
-    return {'observed_v4_isolate': observed_v4_isolates,
-            'observed_v4_fragment': observed_v4_fragments,
-            'in_clade_matching_v4_fragment_and_full_length': in_clade_v4_match,
-            'out_clade_matching_v4_fragment_and_full_length': out_clade_v4_match,  # noqa
-            'unobserved_v4_isolate_fragments': unobserved_v4_isolate_fragments,
-            'out_clade_lineages': out_clade_lineages,
-            'redbiom': asv_rb_detail}
+    return {
+        "observed_v4_isolate": observed_v4_isolates,
+        "observed_v4_fragment": observed_v4_fragments,
+        "in_clade_matching_v4_fragment_and_full_length": in_clade_v4_match,
+        "out_clade_matching_v4_fragment_and_full_length": out_clade_v4_match,  # noqa
+        "unobserved_v4_isolate_fragments": unobserved_v4_isolate_fragments,
+        "out_clade_lineages": out_clade_lineages,
+        "redbiom": asv_rb_detail,
+    }
 
 
 def _load_tree_and_cache(data, features):
@@ -549,12 +591,14 @@ def _load_tree_and_cache(data, features):
             node.ancestor_cache = []
         else:
             if node.parent.name is None:
-                raise ValueError("The provided reference seems malformed. "
-                                 "This error would happen if the "
-                                 "<version>.phylogeny.*.nwk.qza file was "
-                                 "provided. Please try rerunning using the "
-                                 "<version>.taxonomy.*.nwk.qza file as the "
-                                 "reference")
+                raise ValueError(
+                    "The provided reference seems malformed. "
+                    "This error would happen if the "
+                    "<version>.phylogeny.*.nwk.qza file was "
+                    "provided. Please try rerunning using the "
+                    "<version>.taxonomy.*.nwk.qza file as the "
+                    "reference"
+                )
             parent_cache = node.parent.ancestor_cache
             node.ancestor_cache = [node.parent.name] + parent_cache
     return tree
@@ -568,14 +612,14 @@ def _fetch_taxonomy(tree, features):
 
         for i, name in enumerate(tip.ancestor_cache[::-1]):
             lineage[i] = name
-        results.append((feature, '; '.join(lineage), 1.0))
+        results.append((feature, "; ".join(lineage), 1.0))
 
     classification = pd.DataFrame(results, columns=DF_COLUMNS)
     return classification
 
 
 def _fetch_unclassified(features):
-    flat = '; '.join(PAD)
+    flat = "; ".join(PAD)
     results = [(feature, flat, 1.0) for feature in features]
     return pd.DataFrame(results, columns=DF_COLUMNS)
 
@@ -585,14 +629,14 @@ def _classify(tree, features):
     classifiable = names & features
     unclassified = features - names
 
-    df = pd.concat([_fetch_taxonomy(tree, classifiable),
-                    _fetch_unclassified(unclassified)])
+    df = pd.concat(
+        [_fetch_taxonomy(tree, classifiable), _fetch_unclassified(unclassified)]
+    )
 
-    return df.set_index('Feature ID')
+    return df.set_index("Feature ID")
 
 
-def _split_distance_matrix(distance_matrix,
-                           metadata, strict=False):
+def _split_distance_matrix(distance_matrix, metadata, strict=False):
     """Split a distance matrix into its paired components
 
     Parameters
@@ -629,20 +673,20 @@ def _split_distance_matrix(distance_matrix,
         second distance matrix are the WGS data.
     """
     # RAISE ERRORS
-    if 'paired_sample' not in metadata.columns:
-        raise KeyError('Metadata must include paired_sample')
-    elif 'preparation' not in metadata.columns:
-        raise KeyError('Metadata must include preparation')
-    elif any(metadata['preparation'].isnull()):
-        raise ValueError('Missing preparations')
-    elif len(set(metadata['preparation'])) != 2:
-        raise ValueError('Must have exactly 2 unique prepartions')
+    if "paired_sample" not in metadata.columns:
+        raise KeyError("Metadata must include paired_sample")
+    elif "preparation" not in metadata.columns:
+        raise KeyError("Metadata must include preparation")
+    elif any(metadata["preparation"].isnull()):
+        raise ValueError("Missing preparations")
+    elif len(set(metadata["preparation"])) != 2:
+        raise ValueError("Must have exactly 2 unique prepartions")
     elif any(i not in list(metadata.index) for i in distance_matrix.ids):
-        raise ValueError('Sample data missing IDs in distance matrix')
+        raise ValueError("Sample data missing IDs in distance matrix")
 
     # Separate 16s and WGS
-    _16s = metadata[metadata['preparation'] == '16S']
-    _sg = metadata[metadata['preparation'] == 'WGS']
+    _16s = metadata[metadata["preparation"] == "16S"]
+    _sg = metadata[metadata["preparation"] == "WGS"]
 
     # filter ID's that are in distance matrix
     _16s = _16s[_16s.index.isin(distance_matrix.ids)]
@@ -651,21 +695,26 @@ def _split_distance_matrix(distance_matrix,
     # check strict
     if strict is True:
         distance_matrix_16s = distance_matrix.filter(
-                              _16s[_16s.index.isin(
-                                _sg['paired_sample'])].index)
+            _16s[_16s.index.isin(_sg["paired_sample"])].index
+        )
         distance_matrix_sg = distance_matrix.filter(
-                             _sg[_sg.index.isin(
-                                _16s['paired_sample'])].index)
+            _sg[_sg.index.isin(_16s["paired_sample"])].index
+        )
     else:
         distance_matrix_16s = distance_matrix.filter(_16s.index)
         distance_matrix_sg = distance_matrix.filter(_sg.index)
 
-# return tuple
+    # return tuple
     return (distance_matrix_16s, distance_matrix_sg)
 
 
-def _compute_effect_size(distance_matrix_16s, distance_matrix_wgs,
-                         metadata, columns=None, max_level_by_category=5):
+def _compute_effect_size(
+    distance_matrix_16s,
+    distance_matrix_wgs,
+    metadata,
+    columns=None,
+    max_level_by_category=5,
+):
     """
     Computes effect sizes of 16S and WGS distance
     matrices from categorical columns in metadata
@@ -706,23 +755,22 @@ def _compute_effect_size(distance_matrix_16s, distance_matrix_wgs,
 
     # set optional columns argument
     if columns is None:
-        metadata.filter_columns(column_type='categorical')
+        metadata.filter_columns(column_type="categorical")
         columns = list(metadata.to_dataframe().columns.values)
-        columns.remove('paired_sample')
-        columns.remove('preparation')
+        columns.remove("paired_sample")
+        columns.remove("preparation")
 
     # RAISE ERRORS IF
     # check if there exists at least one categorical column to
     # compute effect size
     if len(columns) < 1:
-        raise KeyError('Must include at least one categorical column')
+        raise KeyError("Must include at least one categorical column")
     # check if the split distance matrix dimensions are greater than 1
     elif distance_matrix_16s.shape[0] < 2 or distance_matrix_wgs.shape[0] < 2:
-        raise ValueError('Distance matrix dimensions must be larger than 1x1')
+        raise ValueError("Distance matrix dimensions must be larger than 1x1")
     # check if columns argument are columns in the metadata
-    elif any(i not in list(metadata.to_dataframe().columns.values)
-             for i in columns):
-        raise KeyError('Columns are not defined in metadata')
+    elif any(i not in list(metadata.to_dataframe().columns.values) for i in columns):
+        raise KeyError("Columns are not defined in metadata")
 
     # separate Metadata between 16S and WGS
     metadata_16s = metadata.filter_ids(distance_matrix_16s.ids)
@@ -736,52 +784,57 @@ def _compute_effect_size(distance_matrix_16s, distance_matrix_wgs,
     metadata_wgs = qiime2.Metadata(metadata_wgs)
 
     # convert skbio.DistanceMatrix to DistanceMatrix Artifact
-    _16s = qiime2.Artifact.import_data('DistanceMatrix', distance_matrix_16s)
-    wgs = qiime2.Artifact.import_data('DistanceMatrix', distance_matrix_wgs)
+    _16s = qiime2.Artifact.import_data("DistanceMatrix", distance_matrix_16s)
+    wgs = qiime2.Artifact.import_data("DistanceMatrix", distance_matrix_wgs)
 
     # calculate effect sizes
-    _16s_effect_size, = evident.methods.multivariate_effect_size_by_category(
-                            data=_16s,
-                            sample_metadata=metadata_16s,
-                            group_columns=columns,
-                            max_levels_per_category=max_level_by_category)
-    _wgs_effect_size, = evident.methods.multivariate_effect_size_by_category(
-                            data=wgs,
-                            sample_metadata=metadata_wgs,
-                            group_columns=columns,
-                            max_levels_per_category=max_level_by_category)
+    (_16s_effect_size,) = evident.methods.multivariate_effect_size_by_category(
+        data=_16s,
+        sample_metadata=metadata_16s,
+        group_columns=columns,
+        max_levels_per_category=max_level_by_category,
+    )
+    (_wgs_effect_size,) = evident.methods.multivariate_effect_size_by_category(
+        data=wgs,
+        sample_metadata=metadata_wgs,
+        group_columns=columns,
+        max_levels_per_category=max_level_by_category,
+    )
 
     # convert effect size to pandas dataframe
     effect_size_16 = _16s_effect_size.view(pd.DataFrame)
     effect_size_wgs = _wgs_effect_size.view(pd.DataFrame)
-    effect_size_16.rename(columns={'effect_size': 'effect_size_16s',
-                                   'metric': 'metric_16s'}, inplace=True)
-    effect_size_wgs.rename(columns={'effect_size': 'effect_size_wgs',
-                                    'metric': 'metric_wgs'}, inplace=True)
-    effect_sizes = pd.merge(effect_size_16, effect_size_wgs,
-                            how='outer', on='column')
+    effect_size_16.rename(
+        columns={"effect_size": "effect_size_16s", "metric": "metric_16s"}, inplace=True
+    )
+    effect_size_wgs.rename(
+        columns={"effect_size": "effect_size_wgs", "metric": "metric_wgs"}, inplace=True
+    )
+    effect_sizes = pd.merge(effect_size_16, effect_size_wgs, how="outer", on="column")
     return effect_sizes
 
 
-def taxonomy_from_features(reference_taxonomy: NewickFormat,
-                           reads: DNAFASTAFormat) -> pd.DataFrame:
-    features = {r.metadata['id'] for r in skbio.read(str(reads),
-                                                     format='fasta',
-                                                     constructor=skbio.DNA)}
+def taxonomy_from_features(
+    reference_taxonomy: NewickFormat, reads: DNAFASTAFormat
+) -> pd.DataFrame:
+    features = {
+        r.metadata["id"]
+        for r in skbio.read(str(reads), format="fasta", constructor=skbio.DNA)
+    }
     tree = _load_tree_and_cache(open(str(reference_taxonomy)), features)
     return _classify(tree, features)
 
 
-def taxonomy_from_table(reference_taxonomy: NewickFormat,
-                        table: biom.Table) -> pd.DataFrame:
-    features = set(table.ids(axis='observation'))
+def taxonomy_from_table(
+    reference_taxonomy: NewickFormat, table: biom.Table
+) -> pd.DataFrame:
+    features = set(table.ids(axis="observation"))
     tree = _load_tree_and_cache(open(str(reference_taxonomy)), features)
 
     return _classify(tree, features)
 
 
-def filter_features(feature_table: biom.Table,
-                    reference: NewickFormat) -> biom.Table:
+def filter_features(feature_table: biom.Table, reference: NewickFormat) -> biom.Table:
     try:
         treedata = reference.read()
     except AttributeError:
@@ -789,132 +842,151 @@ def filter_features(feature_table: biom.Table,
     tree = bp.parse_newick(treedata)
 
     names = {tree.name(i) for i, v in enumerate(tree.B) if v}
-    overlap = set(feature_table.ids(axis='observation')) & names
-    return feature_table.filter(overlap,
-                                axis='observation',
-                                inplace=False).remove_empty()
+    overlap = set(feature_table.ids(axis="observation")) & names
+    return feature_table.filter(
+        overlap, axis="observation", inplace=False
+    ).remove_empty()
 
 
-def relabel(feature_table: biom.Table,
-            reference_label_map: pd.DataFrame,
-            as_md5: bool = False,
-            as_asv: bool = False,
-            as_id: bool = False) -> biom.Table:
+def relabel(
+    feature_table: biom.Table,
+    reference_label_map: pd.DataFrame,
+    as_md5: bool = False,
+    as_asv: bool = False,
+    as_id: bool = False,
+) -> biom.Table:
     if int(as_md5) + int(as_asv) + int(as_id) > 1:
         raise ValueError("Only a single conversion type can be specified")
 
     if as_md5:
-        key = 'md5'
+        key = "md5"
     elif as_asv:
-        key = 'sequence'
+        key = "sequence"
     elif as_id:
-        key = 'id'
+        key = "id"
 
-    ids = set(feature_table.ids(axis='observation'))
+    ids = set(feature_table.ids(axis="observation"))
 
-    currently_as_ids = len(ids & set(reference_label_map['id']))
-    currently_as_sequence = len(ids & set(reference_label_map['sequence']))
-    currently_as_md5 = len(ids & set(reference_label_map['md5']))
+    currently_as_ids = len(ids & set(reference_label_map["id"]))
+    currently_as_sequence = len(ids & set(reference_label_map["sequence"]))
+    currently_as_md5 = len(ids & set(reference_label_map["md5"]))
 
     if currently_as_ids > max(currently_as_sequence, currently_as_md5):
-        current = 'id'
+        current = "id"
     elif currently_as_md5 > max(currently_as_sequence, currently_as_ids):
-        current = 'md5'
+        current = "md5"
     else:
-        current = 'sequence'
+        current = "sequence"
 
     if as_asv:
         # consider ASVs sub 500nt
-        is_asv = reference_label_map['sequence'].apply(lambda x: len(x) < 500)
-        subset = reference_label_map[is_asv][[current, 'sequence']]
-        src_dst_map = subset.set_index(current)['sequence'].to_dict()
+        is_asv = reference_label_map["sequence"].apply(lambda x: len(x) < 500)
+        subset = reference_label_map[is_asv][[current, "sequence"]]
+        src_dst_map = subset.set_index(current)["sequence"].to_dict()
 
-        if current == 'id':
-            ids = reference_label_map[~is_asv]['id']
+        if current == "id":
+            ids = reference_label_map[~is_asv]["id"]
             to_id = {i: i for i in ids}
         else:
-            outofsubset = reference_label_map[~is_asv][[current, 'id']]
-            to_id = outofsubset.set_index(current)['id'].to_dict()
+            outofsubset = reference_label_map[~is_asv][[current, "id"]]
+            to_id = outofsubset.set_index(current)["id"].to_dict()
         src_dst_map.update(to_id)
     else:
         src_dst = reference_label_map[[current, key]]
-        src_dst_map = {getattr(r, current): getattr(r, key)
-                       for r in src_dst.itertuples()}
+        src_dst_map = {
+            getattr(r, current): getattr(r, key) for r in src_dst.itertuples()
+        }
 
-    return feature_table.update_ids(src_dst_map, inplace=False,
-                                    axis='observation')
+    return feature_table.update_ids(src_dst_map, inplace=False, axis="observation")
 
 
-def compute_effect_size(output_dir: str,
-                        distance_matrix: skbio.DistanceMatrix,
-                        metadata: qiime2.Metadata,
-                        strict: bool = False,
-                        columns: list = None,
-                        max_level_by_category: int = 5) -> None:
+def compute_effect_size(
+    output_dir: str,
+    distance_matrix: skbio.DistanceMatrix,
+    metadata: qiime2.Metadata,
+    strict: bool = False,
+    columns: list = None,
+    max_level_by_category: int = 5,
+) -> None:
     distance_matrix_16s, distance_matrix_wgs = _split_distance_matrix(
-                                                     distance_matrix,
-                                                     metadata.to_dataframe(),
-                                                     strict)
+        distance_matrix, metadata.to_dataframe(), strict
+    )
     effect_sizes = _compute_effect_size(
-                        distance_matrix_16s,
-                        distance_matrix_wgs,
-                        metadata, columns,
-                        max_level_by_category)
+        distance_matrix_16s,
+        distance_matrix_wgs,
+        metadata,
+        columns,
+        max_level_by_category,
+    )
 
     # compute correlation coefficient and p-value
-    if (len(effect_sizes['column']) > 1):
-        pearson_result = stats.pearsonr(effect_sizes['effect_size_16s'],
-                                        effect_sizes['effect_size_wgs'])
+    if len(effect_sizes["column"]) > 1:
+        pearson_result = stats.pearsonr(
+            effect_sizes["effect_size_16s"], effect_sizes["effect_size_wgs"]
+        )
     else:
         pearson_result = (0, 0)
 
     # create scatterplot
-    m, b = np.polyfit(effect_sizes['effect_size_16s'],
-                      effect_sizes['effect_size_wgs'], 1)
-    plt.scatter(effect_sizes['effect_size_16s'],
-                effect_sizes['effect_size_wgs'])
-    plt.plot(effect_sizes['effect_size_16s'], m *
-             effect_sizes['effect_size_16s'] + b)
-    plt.xlim([min(effect_sizes['effect_size_16s']) * .9,
-              max(effect_sizes['effect_size_16s']) * 1.1])
-    plt.ylim([min(effect_sizes['effect_size_16s']) * .9,
-              max(effect_sizes['effect_size_wgs']) * 1.1])
-    plt.title('Scatterplot of Effect Sizes')
-    plt.xlabel('16s Effect Sizes')
-    plt.ylabel('WGS Effect Sizes')
-    plt.text(0.1, 0.02, 'r = %0.2f, p = %0.2e' % pearson_result,
-             transform=plt.gcf().transFigure, color='red')
-    plt.savefig(os.path.join(output_dir, 'scatter.png'))
+    m, b = np.polyfit(
+        effect_sizes["effect_size_16s"], effect_sizes["effect_size_wgs"], 1
+    )
+    plt.scatter(effect_sizes["effect_size_16s"], effect_sizes["effect_size_wgs"])
+    plt.plot(effect_sizes["effect_size_16s"], m * effect_sizes["effect_size_16s"] + b)
+    plt.xlim(
+        [
+            min(effect_sizes["effect_size_16s"]) * 0.9,
+            max(effect_sizes["effect_size_16s"]) * 1.1,
+        ]
+    )
+    plt.ylim(
+        [
+            min(effect_sizes["effect_size_16s"]) * 0.9,
+            max(effect_sizes["effect_size_wgs"]) * 1.1,
+        ]
+    )
+    plt.title("Scatterplot of Effect Sizes")
+    plt.xlabel("16s Effect Sizes")
+    plt.ylabel("WGS Effect Sizes")
+    plt.text(
+        0.1,
+        0.02,
+        "r = %0.2f, p = %0.2e" % pearson_result,
+        transform=plt.gcf().transFigure,
+        color="red",
+    )
+    plt.savefig(os.path.join(output_dir, "scatter.png"))
     plt.close()
 
     # download effect size table
-    effect_sizes.to_csv(os.path.join(output_dir, 'table.tsv'), sep='\t')
+    effect_sizes.to_csv(os.path.join(output_dir, "table.tsv"), sep="\t")
 
-    TEMPLATES = pkg_resources.resource_filename(
-        'q2_gg2', 'compute_effect_size_assets')
-    index = os.path.join(TEMPLATES, 'index.html')
+    TEMPLATES = pkg_resources.resource_filename("q2_gg2", "compute_effect_size_assets")
+    index = os.path.join(TEMPLATES, "index.html")
     q2templates.render(index, output_dir, context={})
 
 
 def non_v4_16s(ctx, table, sequences, backbone, perc_identity=0.99, threads=1):
-    action = ctx.get_action('vsearch', 'cluster_features_closed_reference')
-    res_table, res_seqs, res_unmatched = action(sequences, table, backbone,
-                                                perc_identity=perc_identity,
-                                                threads=threads)
+    action = ctx.get_action("vsearch", "cluster_features_closed_reference")
+    res_table, res_seqs, res_unmatched = action(
+        sequences, table, backbone, perc_identity=perc_identity, threads=threads
+    )
     return res_table, res_seqs
 
 
-def collapse_multifurcation(feature_table: biom.Table,
-                            phylogeny: NewickFormat) -> (biom.Table,
-                                                         skbio.TreeNode):
-    regexs = [re.compile(r'^[ATGC]{90}'),
-              re.compile(r'^[abcdef0-9]{32}$'),
-              re.compile(r'^[0-9]{8}$')]
+def collapse_multifurcation(
+    feature_table: biom.Table, phylogeny: NewickFormat
+) -> (biom.Table, skbio.TreeNode):
+    regexs = [
+        re.compile(r"^[ATGC]{90}"),
+        re.compile(r"^[abcdef0-9]{32}$"),
+        re.compile(r"^[0-9]{8}$"),
+    ]
 
     # determine which regex to use with the table
     regex = None
     for r in regexs:
-        if r.match(feature_table.ids(axis='observation')[0]):
+        if r.match(feature_table.ids(axis="observation")[0]):
             regex = r
             break
 
@@ -928,9 +1000,12 @@ def collapse_multifurcation(feature_table: biom.Table,
         phylogeny = open(str(phylogeny)).read()
     phylogeny = bp.parse_newick(phylogeny)
 
-    phylogeny_tips = {phylogeny.name(i) for i in range(len(phylogeny.B) - 1)
-                      if phylogeny.B[i] and not phylogeny.B[i+1]}
-    overlap = phylogeny_tips & set(feature_table.ids(axis='observation'))
+    phylogeny_tips = {
+        phylogeny.name(i)
+        for i in range(len(phylogeny.B) - 1)
+        if phylogeny.B[i] and not phylogeny.B[i + 1]
+    }
+    overlap = phylogeny_tips & set(feature_table.ids(axis="observation"))
 
     # bail early if something is weird
     if not overlap:
@@ -955,10 +1030,10 @@ def collapse_multifurcation(feature_table: biom.Table,
     phylogeny.assign_ids()
     collapse_map = {}
     for n in list(phylogeny.non_tips()):
-        if hasattr(n, 'possible_multifurcation'):
+        if hasattr(n, "possible_multifurcation"):
             if all([c.is_asv for c in n.children]):
                 if n.name is None:
-                    n.name = 'multifurcation-%d' % n.id
+                    n.name = "multifurcation-%d" % n.id
 
                 for c in list(n.children):
                     n.remove(c)
@@ -966,7 +1041,8 @@ def collapse_multifurcation(feature_table: biom.Table,
                     collapse_map[c.name] = n.name
 
     # collapse the feature table to the multifurcation
-    table = feature_table.collapse(lambda i, m: collapse_map.get(i, i),
-                                   axis='observation', norm=False)
+    table = feature_table.collapse(
+        lambda i, m: collapse_map.get(i, i), axis="observation", norm=False
+    )
     table.del_metadata()
     return table, phylogeny
